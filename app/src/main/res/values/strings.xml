@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">ProjetMobile</string>
+    <string name="inscription_name">Inscription</string>
+    <string name="username_name">Username</string>
+    <string name="email_name">Email</string>
+    <string name="password_name">Password</string>
+    <string name="inscription_button">S\'inscrire</string>
 </resources>
