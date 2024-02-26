@@ -5,4 +5,8 @@
     <string name="email_name">Email</string>
     <string name="password_name">Password</string>
     <string name="inscription_button">S\'inscrire</string>
+    <string name="signin">Se Connecter</string>
+    <string name="email">Adresse email</string>
+    <string name="password">Mot de passe</string>
+    <string name="password_forgotten">Mot de passe oublié?</string>
 </resources>
