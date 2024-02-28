@@ -54,9 +54,11 @@
             android:text="@string/password_forgotten" />
 
         <Button
+            android:id="@+id/submit_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/signin"
+            android:onClick="signIn"
             />
 
     </LinearLayout>
