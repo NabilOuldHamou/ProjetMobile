@@ -13,6 +13,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import fr.devmobile.projetmobile.R;
+import fr.devmobile.projetmobile.managers.SessionManager;
+import fr.devmobile.projetmobile.models.User;
 import fr.devmobile.projetmobile.network.AppHttpClient;
 
 public class LoginActivity extends AppCompatActivity {
@@ -31,13 +33,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void signIn(View v) {
-        String email = emailInput.getEditableText().toString();
-        String password = passwordInput.getEditableText().toString();
+        String emailIn = emailInput.getEditableText().toString();
+        String passwordIn = passwordInput.getEditableText().toString();
 
-        if (!email.isEmpty() && !password.isEmpty()) {
+        if (!emailIn.isEmpty() && !passwordIn.isEmpty()) {
             submitButton.setClickable(false);
             String body = String.format("{\"Email\": \"%s\", \"Password\": \"%s\"}",
-                    email, password);
+                    emailIn, passwordIn);
 
             AppHttpClient appHttpClient = new AppHttpClient();
             appHttpClient.sendPostRequest("/login", body)
@@ -51,7 +53,16 @@ public class LoginActivity extends AppCompatActivity {
                             return;
                         }
 
-                        // TODO : Handle when users actually logs in
+                        JSONObject userObjet = jsonObject.getJSONObject("user");
+                        String token = jsonObject.getString("token");
+                        String id = userObjet.getString("ID");
+                        String username = userObjet.getString("Username");
+                        String displayName = userObjet.getString("DisplayName");
+                        String email = userObjet.getString("Email");
+
+                        SessionManager sm = MainActivity.getSessionManager();
+                        sm.saveToken(token);
+                        sm.setUser(new User(id, username, displayName, email));
 
                     } catch (JSONException e) {
                         throw new RuntimeException(e);

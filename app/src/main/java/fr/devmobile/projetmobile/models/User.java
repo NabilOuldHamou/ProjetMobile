@@ -1,31 +1,33 @@
 package fr.devmobile.projetmobile.models;
 
-import java.util.Date;
-import java.util.Optional;
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
+@Entity(tableName = "user")
 public class User {
 
+    @PrimaryKey
+    @NonNull
     private String id;
-    private Date createdAt;
-    private Date updatedAt;
     private String avatar = "https://oxyjen.io/assets/default.jpg";
     private String username;
     private String displayName;
     private String email;
 
-    public User(String id, Date createdAt, Date updatedAt, String username, String displayName, String email) {
+    public User() {
+
+    }
+
+    public User(String id, String username, String displayName, String email) {
         this.id = id;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
         this.username = username;
         this.displayName = displayName;
         this.email = email;
     }
 
-    public User(String id, Date createdAt, Date updatedAt, String avatar, String username, String displayName, String email) {
+    public User(String id, String avatar, String username, String displayName, String email) {
         this.id = id;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
         this.avatar = avatar;
         this.username = username;
         this.displayName = displayName;
@@ -38,22 +40,6 @@ public class User {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public String getAvatar() {
