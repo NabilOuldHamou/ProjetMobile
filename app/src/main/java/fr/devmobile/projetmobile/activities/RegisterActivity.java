@@ -2,7 +2,6 @@ package fr.devmobile.projetmobile.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,39 +18,43 @@ import fr.devmobile.projetmobile.managers.SessionManager;
 import fr.devmobile.projetmobile.models.User;
 import fr.devmobile.projetmobile.network.AppHttpClient;
 
-public class LoginActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
 
-    private EditText emailInput;
-    private EditText passwordInput;
-    private Button submitButton;
+    private EditText username;
+    private EditText email;
+    private EditText password;
+    private Button registerButton;
     private TextView errorOutput;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        emailInput = (EditText) findViewById(R.id.email_input);
-        passwordInput = (EditText) findViewById(R.id.password_input);
-        submitButton = (Button) findViewById(R.id.submit_button);
-        errorOutput = (TextView) findViewById(R.id.si_error_output);
+        setContentView(R.layout.activity_register);
+
+        username = (EditText) findViewById(R.id.usernameId);
+        email = (EditText) findViewById(R.id.emailId);
+        password = (EditText) findViewById(R.id.passwordId);
+        registerButton = (Button) findViewById(R.id.registerButton);
+        errorOutput = (TextView) findViewById(R.id.su_error_output);
     }
 
-    public void signIn(View v) {
-        String emailIn = emailInput.getEditableText().toString();
-        String passwordIn = passwordInput.getEditableText().toString();
+    public void signUp(View v) {
+        String emailIn = email.getEditableText().toString();
+        String usernameIn = username.getEditableText().toString();
+        String passwordIn = password.getEditableText().toString();
 
-        if (!emailIn.isEmpty() && !passwordIn.isEmpty()) {
-            submitButton.setClickable(false);
-            String body = String.format("{\"Email\": \"%s\", \"Password\": \"%s\"}",
-                    emailIn, passwordIn);
+        if (!emailIn.isEmpty() && !usernameIn.isEmpty() && !passwordIn.isEmpty()) {
+            registerButton.setClickable(false);
+            String body = String.format("{\"Username\": \"%s\", \"DisplayName\": \"%s\", \"Email\": \"%s\", \"Password\": \"%s\"}",
+                    usernameIn, usernameIn, emailIn, passwordIn);
 
             AppHttpClient appHttpClient = new AppHttpClient();
-            appHttpClient.sendPostRequest("/login", body)
+            appHttpClient.sendPostRequest("/signup", body)
                 .thenAccept(result -> {
                     try {
                         JSONObject jsonObject = new JSONObject(result);
                         if (jsonObject.has("error")) {
-                            submitButton.setClickable(true);
+                            registerButton.setClickable(true);
 
                             String error = jsonObject.getString("error");
                             errorOutput.setText(error);
@@ -77,10 +80,10 @@ public class LoginActivity extends AppCompatActivity {
 
                 });
         }
-
     }
 
-    public void redirectToRegister(View view) {
-        startActivity(new Intent(this, RegisterActivity.class));
+    public void redirectToLogin(View v) {
+        startActivity(new Intent(this, LoginActivity.class));
     }
+
 }

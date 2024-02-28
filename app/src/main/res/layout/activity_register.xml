@@ -13,22 +13,28 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/inscription_name"
+            android:text="@string/register"
             android:textSize="14pt"
             android:gravity="center"
             android:layout_marginBottom="20dp">
         </TextView>
+        <TextView
+            android:id="@+id/su_error_output"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#940101"/>
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center">
             <TextView
-                android:text="@string/email_name"
+                android:text="@string/username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <EditText
-                android:hint="@string/email_name"
+                android:id="@+id/usernameId"
+                android:hint="@string/username"
                 android:layout_width="200dp"
                 android:maxWidth="300dp"
                 android:minWidth="150dp"
@@ -40,11 +46,13 @@
             android:orientation="vertical"
             android:gravity="center">
             <TextView
-                android:text="@string/username_name"
+                android:text="@string/email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <EditText
-                android:hint="@string/username_name"
+                android:id="@+id/emailId"
+                android:hint="@string/email"
+                android:inputType="textEmailAddress"
                 android:layout_width="200dp"
                 android:maxWidth="300dp"
                 android:minWidth="150dp"
@@ -56,21 +64,30 @@
             android:orientation="vertical"
             android:gravity="center">
             <TextView
-                android:text="@string/password_name"
+                android:text="@string/password"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <EditText
-                android:hint="@string/password_name"
+                android:id="@+id/passwordId"
+                android:hint="@string/password"
                 android:layout_width="200dp"
                 android:maxWidth="300dp"
                 android:minWidth="150dp"
+                android:inputType="textPassword"
                 android:layout_height="match_parent"/>
         </LinearLayout>
         <Button
+            android:onClick="signUp"
+            android:id="@+id/registerButton"
             android:layout_marginTop="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/inscription_button"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/already_have_account"
+            android:onClick="redirectToLogin"/>
     </LinearLayout>
 
 </RelativeLayout>

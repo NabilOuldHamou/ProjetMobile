@@ -39,6 +39,11 @@ public class SessionManager {
         editor.commit();
     }
 
+    public void deleteToken() {
+        editor.remove("token");
+        editor.commit();
+    }
+
     public String getToken() {
         return sharedPreferences.getString("token", "");
     }

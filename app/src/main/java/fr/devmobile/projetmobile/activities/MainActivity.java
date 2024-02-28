@@ -1,6 +1,7 @@
 package fr.devmobile.projetmobile.activities;
 
 import androidx.activity.ComponentActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
 import android.content.Intent;
@@ -10,7 +11,7 @@ import fr.devmobile.projetmobile.R;
 import fr.devmobile.projetmobile.database.AppDatabase;
 import fr.devmobile.projetmobile.managers.SessionManager;
 
-public class MainActivity extends ComponentActivity implements SessionManager.SessionManagerListener {
+public class MainActivity extends AppCompatActivity implements SessionManager.SessionManagerListener {
 
     private static AppDatabase appDatabase;
     private static SessionManager sessionManager;
@@ -33,12 +34,8 @@ public class MainActivity extends ComponentActivity implements SessionManager.Se
 
     @Override
     public void onUserLoaded() {
-        if (sessionManager.getToken().equals("")) {
-            Intent i = new Intent(this, LoginActivity.class);
-            startActivity(i);
-        } else {
-            Intent i = new Intent(this, ProfileActivity.class);
-            startActivity(i);
-        }
+        startActivity(new Intent(this,
+                sessionManager.getToken().equals("") ?
+                LoginActivity.class : ProfileActivity.class));
     }
 }
