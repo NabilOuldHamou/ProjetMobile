@@ -10,7 +10,7 @@ import fr.devmobile.projetmobile.R;
 import fr.devmobile.projetmobile.database.AppDatabase;
 import fr.devmobile.projetmobile.managers.SessionManager;
 
-public class MainActivity extends ComponentActivity {
+public class MainActivity extends ComponentActivity implements SessionManager.SessionManagerListener {
 
     private static AppDatabase appDatabase;
     private static SessionManager sessionManager;
@@ -20,15 +20,7 @@ public class MainActivity extends ComponentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "app-database").build();
-        sessionManager = new SessionManager(getApplicationContext());
-
-        if (sessionManager.getToken().equals("")) {
-            Intent i = new Intent(this, LoginActivity.class);
-            startActivity(i);
-        } else {
-            Intent i = new Intent(this, ProfileActivity.class);
-            startActivity(i);
-        }
+        sessionManager = new SessionManager(getApplicationContext(), this);
     }
 
     public static SessionManager getSessionManager() {
@@ -37,5 +29,16 @@ public class MainActivity extends ComponentActivity {
 
     public static AppDatabase getAppDatabase() {
         return appDatabase;
+    }
+
+    @Override
+    public void onUserLoaded() {
+        if (sessionManager.getToken().equals("")) {
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivity(i);
+        } else {
+            Intent i = new Intent(this, ProfileActivity.class);
+            startActivity(i);
+        }
     }
 }

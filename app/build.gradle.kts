@@ -29,6 +29,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-rxjava3:2.6.1")

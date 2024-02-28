@@ -17,8 +17,9 @@ public class SessionManager {
     private User user;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
+    private SessionManagerListener listener;
 
-    public SessionManager(Context context) {
+    public SessionManager(Context context, SessionManagerListener listener) {
         this.sharedPreferences = context.getSharedPreferences("userPrefs", Context.MODE_PRIVATE);
         this.editor = sharedPreferences.edit();
 
@@ -28,6 +29,7 @@ public class SessionManager {
                     if (result.size() > 0) {
                         this.user = result.get(0);
                     }
+                    listener.onUserLoaded();
                 });
 
     }
@@ -49,4 +51,9 @@ public class SessionManager {
     public User getUser() {
         return user;
     }
+
+    public interface SessionManagerListener {
+        void onUserLoaded();
+    }
+
 }
