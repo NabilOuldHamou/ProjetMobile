@@ -25,12 +25,46 @@ import okhttp3.Response;
 
 public class AppHttpClient {
 
-    public final String API_BASE_URL = "https://oxyjen.io/api";
+    public final static String API_BASE_URL = "https://oxyjen.io/api";
 
-    private OkHttpClient client;
+    private final OkHttpClient client;
+
+    private String token;
 
     public AppHttpClient() {
         this.client = new OkHttpClient();
+    }
+
+    public AppHttpClient(String token) {
+        this.client = new OkHttpClient();
+        this.token = token;
+    }
+
+    public CompletableFuture<Boolean> validateToken() {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+
+        Headers headers = new Headers.Builder()
+                .add("Authorization", token)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(API_BASE_URL + "/validate")
+                .headers(headers)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                future.completeExceptionally(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                future.complete(response.isSuccessful());
+            }
+        });
+
+        return future;
     }
 
     public CompletableFuture<String> sendPostRequest(String endpoint, String body) {
