@@ -2,7 +2,6 @@ package fr.devmobile.projetmobile.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,11 +10,16 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import fr.devmobile.projetmobile.R;
 import fr.devmobile.projetmobile.managers.SessionManager;
+import fr.devmobile.projetmobile.models.Post;
 import fr.devmobile.projetmobile.models.User;
 import fr.devmobile.projetmobile.network.AppHttpClient;
 
@@ -49,6 +53,10 @@ public class LoginActivity extends AppCompatActivity {
             appHttpClient.sendPostRequest("/login", body)
                 .thenAccept(result -> {
                     try {
+                        SessionManager sm = MainActivity.getSessionManager();
+                        sm.clearPosts();
+                        sm.deleteToken();
+
                         JSONObject jsonObject = new JSONObject(result);
                         if (jsonObject.has("error")) {
                             submitButton.setClickable(true);
@@ -58,18 +66,33 @@ public class LoginActivity extends AppCompatActivity {
                             return;
                         }
 
-                        JSONObject userObjet = jsonObject.getJSONObject("user");
+                        JSONObject userObject = jsonObject.getJSONObject("user");
                         String token = jsonObject.getString("token");
-                        String id = userObjet.getString("ID");
-                        String username = userObjet.getString("Username");
-                        String displayName = userObjet.getString("DisplayName");
-                        String email = userObjet.getString("Email");
+                        String id = userObject.getString("ID");
+                        String username = userObject.getString("Username");
+                        String displayName = userObject.getString("DisplayName");
+                        String email = userObject.getString("Email");
 
-                        SessionManager sm = MainActivity.getSessionManager();
-                        sm.saveToken(token);
+                        JSONArray posts = userObject.getJSONArray("Posts");
+                        for (int i = 0; i < posts.length(); i++) {
+                            JSONObject post = posts.getJSONObject(i);
+                            String postId = post.getString("ID");
+                            String postContent = post.getString("Text");
+                            List<String> urls = new ArrayList<>();
+                            JSONArray files = post.getJSONArray("Files");
+                            for (int j = 0; j < files.length(); j++) {
+                                JSONObject file = files.getJSONObject(j);
+                                urls.add("https://oxyjen.io/assets/" + file.getString("FileName"));
+                            }
+
+                            sm.addPost(new Post(postId, postContent, urls));
+                        }
+
                         sm.setUser(new User(id, username, displayName, email));
+                        sm.saveToken(token);
 
                         startActivity(new Intent(this, ProfileActivity.class));
+                        this.finish();
 
                     } catch (JSONException e) {
                         throw new RuntimeException(e);

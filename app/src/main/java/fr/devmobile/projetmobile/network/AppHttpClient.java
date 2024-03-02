@@ -1,19 +1,10 @@
 package fr.devmobile.projetmobile.network;
 
-import android.util.Log;
-import android.util.Pair;
-
 import androidx.annotation.NonNull;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
 
-import fr.devmobile.projetmobile.models.User;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
@@ -61,6 +52,34 @@ public class AppHttpClient {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 future.complete(response.isSuccessful());
+            }
+        });
+
+        return future;
+    }
+
+    public CompletableFuture<String> sendGetRequest(String endpoint) {
+        CompletableFuture<String> future = new CompletableFuture<>();
+
+        Headers headers = new Headers.Builder()
+                .add("Authorization", token)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(API_BASE_URL + endpoint)
+                .headers(headers)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                future.completeExceptionally(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                String data = response.body().string();
+                future.complete(data);
             }
         });
 
