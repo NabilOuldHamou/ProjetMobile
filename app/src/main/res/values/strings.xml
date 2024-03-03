@@ -9,4 +9,8 @@
     <string name="password_forgotten">Mot de passe oublié?</string>
     <string name="create_account">Créer un compte</string>
     <string name="already_have_account">Vous avez déjà un compte</string>
+    <string name="action_home_string">Accueil</string>
+    <string name="action_search_string">Recherche</string>
+    <string name="action_post_string">Poster</string>
+    <string name="action_profile_string">Profil</string>
 </resources>

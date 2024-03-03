@@ -1,33 +1,36 @@
-package fr.devmobile.projetmobile.managers;
+package fr.devmobile.projetmobile.session;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.room.Room;
+
 import java.util.List;
 
-import fr.devmobile.projetmobile.activities.MainActivity;
 import fr.devmobile.projetmobile.database.AppDatabase;
 import fr.devmobile.projetmobile.models.Post;
 import fr.devmobile.projetmobile.models.User;
 import fr.devmobile.projetmobile.network.AppHttpClient;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-public class SessionManager {
+public class Session {
 
-    public User user;
-    public List<Post> posts;
+    private static Session instance;
+    private static AppDatabase appDatabase;
 
     public SharedPreferences sharedPreferences;
     public SharedPreferences.Editor editor;
-    public SessionManagerListener listener;
+
+    private User user;
+    private List<Post> posts;
 
     @SuppressLint("CheckResult")
-    public SessionManager(Context context, SessionManagerListener listener) {
-        this.sharedPreferences = context.getSharedPreferences("userPrefs", Context.MODE_PRIVATE);
-        this.editor = sharedPreferences.edit();
-
-        AppDatabase appDatabase = MainActivity.getAppDatabase();
+    public Session(Context context, SessionListener listener) {
+        instance = this;
+        appDatabase = Room.databaseBuilder(context, AppDatabase.class, "app-database").build();
+        sharedPreferences = context.getSharedPreferences("userPrefs", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
 
         appDatabase.postDao().getPosts()
                 .subscribeOn(Schedulers.io())
@@ -44,15 +47,17 @@ public class SessionManager {
 
                     AppHttpClient appHttpClient = new AppHttpClient(getToken());
                     appHttpClient.validateToken()
-                        .thenAccept(b -> {
-                            if (!b) {
-                                deleteToken();
-                                appDatabase.userDao().deleteUser(user);
-                            }
-                        });
+                            .thenAccept(b -> {
+                                if (!b) {
+                                    deleteToken();
+                                    appDatabase.userDao().deleteUser(user);
+                                }
+                            });
 
                     listener.onTaskDone();
                 });
+
+
 
     }
 
@@ -66,17 +71,47 @@ public class SessionManager {
         editor.commit();
     }
 
-    public String getToken() {
-        return sharedPreferences.getString("token", "");
-    }
+    // Modifiers
+
 
     public void setUser(User user) {
         this.user = user;
-        MainActivity.getAppDatabase().userDao().insert(user);
+        appDatabase.userDao().insert(user);
     }
 
     public void deleteUser() {
-        MainActivity.getAppDatabase().userDao().deleteUser(user);
+        user = null;
+        appDatabase.userDao().deleteUser(user);
+    }
+
+    public void clearPosts() {
+        posts.forEach(p -> {
+            appDatabase.postDao().deletePost(p);
+        });
+        posts.clear();
+    }
+
+    public void addPost(Post post) {
+        posts.add(post);
+        appDatabase.postDao().insert(post);
+    }
+
+    public void removePost(Post post) {
+        posts.remove(post);
+        appDatabase.postDao().deletePost(post);
+    }
+
+    // GETTERS
+    public static AppDatabase getAppDatabase() {
+        return appDatabase;
+    }
+
+    public static Session getInstance() {
+        return instance;
+    }
+
+    public String getToken() {
+        return sharedPreferences.getString("token", "");
     }
 
     public User getUser() {
@@ -87,24 +122,8 @@ public class SessionManager {
         return posts;
     }
 
-    public void clearPosts() {
-        posts.forEach(p -> {
-            MainActivity.getAppDatabase().postDao().deletePost(p);
-        });
-        posts.clear();
-    }
-
-    public void removePost(Post post) {
-        posts.remove(post);
-        MainActivity.getAppDatabase().postDao().deletePost(post);
-    }
-
-    public void addPost(Post post) {
-        posts.add(post);
-        MainActivity.getAppDatabase().postDao().insert(post);
-    }
-
-    public interface SessionManagerListener {
+    public interface SessionListener {
         void onTaskDone();
     }
+
 }

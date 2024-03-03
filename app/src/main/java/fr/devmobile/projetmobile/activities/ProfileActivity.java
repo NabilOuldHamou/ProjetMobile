@@ -17,9 +17,9 @@ import java.util.List;
 
 import fr.devmobile.projetmobile.R;
 import fr.devmobile.projetmobile.adapters.ImageAdapter;
-import fr.devmobile.projetmobile.managers.SessionManager;
 import fr.devmobile.projetmobile.models.Post;
 import fr.devmobile.projetmobile.models.User;
+import fr.devmobile.projetmobile.session.Session;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -34,9 +34,9 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        SessionManager sm = MainActivity.getSessionManager();
-        User user = sm.getUser();
-        List<Post> posts = sm.getPosts();
+        Session session = Session.getInstance();
+        User user = session.getUser();
+        List<Post> posts = session.getPosts();
 
         // Affichage des informations de l'utilisateur en haut de la page
 
@@ -61,10 +61,11 @@ public class ProfileActivity extends AppCompatActivity {
     public void openSettings(View v) {
         // TODO : Pop a menu with actions related to the account.
 
-        SessionManager sm = MainActivity.getSessionManager();
-        sm.deleteToken();
-        User user = sm.getUser();
-        MainActivity.getAppDatabase().userDao().deleteUser(user);
+        Session session = Session.getInstance();
+
+        session.deleteToken();
+        session.deleteUser();
+
         startActivity(new Intent(this, LoginActivity.class));
         this.finish();
     }

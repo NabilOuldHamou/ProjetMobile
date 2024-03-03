@@ -18,10 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.devmobile.projetmobile.R;
-import fr.devmobile.projetmobile.managers.SessionManager;
 import fr.devmobile.projetmobile.models.Post;
 import fr.devmobile.projetmobile.models.User;
 import fr.devmobile.projetmobile.network.AppHttpClient;
+import fr.devmobile.projetmobile.session.Session;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -53,9 +53,9 @@ public class LoginActivity extends AppCompatActivity {
             appHttpClient.sendPostRequest("/login", body)
                 .thenAccept(result -> {
                     try {
-                        SessionManager sm = MainActivity.getSessionManager();
-                        sm.clearPosts();
-                        sm.deleteToken();
+                        Session session = Session.getInstance();
+                        session.clearPosts();
+                        session.deleteToken();
 
                         JSONObject jsonObject = new JSONObject(result);
                         if (jsonObject.has("error")) {
@@ -85,11 +85,11 @@ public class LoginActivity extends AppCompatActivity {
                                 urls.add("https://oxyjen.io/assets/" + file.getString("FileName"));
                             }
 
-                            sm.addPost(new Post(postId, postContent, urls));
+                            session.addPost(new Post(postId, postContent, urls));
                         }
 
-                        sm.setUser(new User(id, username, displayName, email));
-                        sm.saveToken(token);
+                        session.setUser(new User(id, username, displayName, email));
+                        session.saveToken(token);
 
                         startActivity(new Intent(this, ProfileActivity.class));
                         this.finish();

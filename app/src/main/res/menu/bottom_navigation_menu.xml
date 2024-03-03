@@ -2,8 +2,24 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/action_settings"
-        android:icon="@drawable/cog"
-        android:title="Settings" />
+        android:id="@+id/action_home"
+        android:icon="@drawable/home"
+        android:title="@string/action_home_string" />
+
+    <item
+        android:id="@+id/action_post"
+        android:icon="@drawable/camera"
+        android:title="@string/action_post_string" />
+
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/search"
+        android:title="@string/action_search_string" />
+
+    <item
+        android:id="@+id/action_profile"
+        android:icon="@drawable/user"
+        android:title="@string/action_profile_string" />
 
 </menu>

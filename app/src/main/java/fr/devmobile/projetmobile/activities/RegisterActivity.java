@@ -14,9 +14,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import fr.devmobile.projetmobile.R;
-import fr.devmobile.projetmobile.managers.SessionManager;
 import fr.devmobile.projetmobile.models.User;
 import fr.devmobile.projetmobile.network.AppHttpClient;
+import fr.devmobile.projetmobile.session.Session;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -68,11 +68,12 @@ public class RegisterActivity extends AppCompatActivity {
                         String displayName = userObjet.getString("DisplayName");
                         String email = userObjet.getString("Email");
 
-                        SessionManager sm = MainActivity.getSessionManager();
-                        sm.saveToken(token);
-                        sm.setUser(new User(id, username, displayName, email));
+                        Session session = Session.getInstance();
+                        session.saveToken(token);
+                        session.setUser(new User(id, username, displayName, email));
 
                         startActivity(new Intent(this, ProfileActivity.class));
+                        this.finish();
 
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
@@ -84,6 +85,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     public void redirectToLogin(View v) {
         startActivity(new Intent(this, LoginActivity.class));
+        this.finish();
     }
 
 }
