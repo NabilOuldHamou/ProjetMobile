@@ -13,4 +13,7 @@
     <string name="action_search_string">Recherche</string>
     <string name="action_post_string">Poster</string>
     <string name="action_profile_string">Profil</string>
+
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

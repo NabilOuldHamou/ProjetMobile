@@ -1,40 +1,57 @@
 package fr.devmobile.projetmobile.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import fr.devmobile.projetmobile.R;
+import fr.devmobile.projetmobile.activities.fragments.HomeFragment;
+import fr.devmobile.projetmobile.activities.fragments.PostFragment;
+import fr.devmobile.projetmobile.activities.fragments.ProfileFragment;
+import fr.devmobile.projetmobile.activities.fragments.SearchFragment;
+import fr.devmobile.projetmobile.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
+
+    ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        replaceFragment(new HomeFragment());
 
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setOnItemSelectedListener(navListener);
+        binding.bottomNavigation.setOnItemSelectedListener(navListener);
     }
 
     private BottomNavigationView.OnItemSelectedListener navListener = item -> {
         switch (item.getItemId()) {
             case R.id.action_home:
-                startActivity(new Intent(this, MainActivity.class));
+                replaceFragment(new HomeFragment());
                 break;
             case R.id.action_post:
-                // TODO : startActivity(new Intent(this, PostActivity.class));
+                replaceFragment(new PostFragment());
                 break;
             case R.id.action_search:
-                // TODO : startActivity(new Intent(this, SearchActivity.class));
+                replaceFragment(new SearchFragment());
                 break;
             case R.id.action_profile:
-                startActivity(new Intent(this, ProfileActivity.class));
+                replaceFragment(new ProfileFragment());
                 break;
         }
-        return false;
+        return true;
     };
+
+    private void replaceFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, fragment);
+        fragmentTransaction.commit();
+    }
 }

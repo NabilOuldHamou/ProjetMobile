@@ -62,7 +62,7 @@ public class SplashActivity extends AppCompatActivity implements Session.Session
                         session.addPost(new Post(postId, postContent, urls));
                     }
 
-                    startActivity(new Intent(this, ProfileActivity.class));
+                    startActivity(new Intent(this, MainActivity.class));
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }

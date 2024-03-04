@@ -72,7 +72,7 @@ public class RegisterActivity extends AppCompatActivity {
                         session.saveToken(token);
                         session.setUser(new User(id, username, displayName, email));
 
-                        startActivity(new Intent(this, ProfileActivity.class));
+                        startActivity(new Intent(this, MainActivity.class));
                         this.finish();
 
                     } catch (JSONException e) {

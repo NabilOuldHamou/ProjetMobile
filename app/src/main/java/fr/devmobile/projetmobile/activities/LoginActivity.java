@@ -91,7 +91,7 @@ public class LoginActivity extends AppCompatActivity {
                         session.setUser(new User(id, username, displayName, email));
                         session.saveToken(token);
 
-                        startActivity(new Intent(this, ProfileActivity.class));
+                        startActivity(new Intent(this, MainActivity.class));
                         this.finish();
 
                     } catch (JSONException e) {
