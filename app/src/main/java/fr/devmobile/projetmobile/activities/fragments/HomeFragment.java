@@ -37,12 +37,15 @@ public class HomeFragment extends Fragment {
         recyclerView = view.findViewById(R.id.home_recycler_view);
 
         // Fetch data for now use dummy data
+        /*
         List<PostAdapter.PostData> data = Arrays.asList(
                 new PostAdapter.PostData(Arrays.asList("https://loremflickr.com/cache/resized/65535_52893558487_b5dcac7206_n_320_240_nofilter.jpg"), "XDXD", "John Doe", "dummyData", "000-000-000-000", "https://avatars.githubusercontent.com/u/97165289"),
         new PostAdapter.PostData(Arrays.asList("https://loremflickr.com/cache/resized/65535_52893558487_b5dcac7206_n_320_240_nofilter.jpg"), "XDXD", "John Doe", "dummyData", "000-000-000-000", "https://avatars.githubusercontent.com/u/97165289")
         );
 
         setupRecycleView(data);
+
+         */
 
         return view;
     }
