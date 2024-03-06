@@ -15,6 +15,8 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 import fr.devmobile.projetmobile.R;
+import fr.devmobile.projetmobile.models.Post;
+import fr.devmobile.projetmobile.models.User;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
@@ -48,6 +50,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         Glide.with(context).load(post.getAuthorProfilePic()).into(holder.avatarImageView);
     }
 
+    public void setPosts(List<PostData> posts) {
+        this.posts = posts;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
         return posts.size();
@@ -76,13 +83,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         private String authorId;
         private String authorProfilePic;
 
-        public PostData(List<String> urls, String description, String author, String username, String authorId, String authorProfilePic) {
-            this.urls = urls;
-            this.description = description;
-            this.author = author;
-            this.username = username;
-            this.authorId = authorId;
-            this.authorProfilePic = authorProfilePic;
+        public PostData(Post post, User user) {
+            this.urls = post.getUrls();
+            this.description = post.getText();
+            this.author = user.getDisplayName();
+            this.username = user.getUsername();
+            this.authorId = user.getId();
+            this.authorProfilePic = user.getAvatar();
         }
 
         public String getDescription() {
