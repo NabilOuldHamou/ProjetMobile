@@ -9,11 +9,17 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.Arrays;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.devmobile.projetmobile.R;
 import fr.devmobile.projetmobile.adapters.PostAdapter;
+import fr.devmobile.projetmobile.network.AppHttpClient;
+import fr.devmobile.projetmobile.session.Session;
 
 public class HomeFragment extends Fragment {
 
@@ -36,13 +42,46 @@ public class HomeFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.home_recycler_view);
 
-        // Fetch data for now use dummy data
-        List<PostAdapter.PostData> data = Arrays.asList(
-                new PostAdapter.PostData(Arrays.asList("https://loremflickr.com/cache/resized/65535_52893558487_b5dcac7206_n_320_240_nofilter.jpg"), "XDXD", "John Doe", "dummyData", "000-000-000-000", "https://avatars.githubusercontent.com/u/97165289"),
-        new PostAdapter.PostData(Arrays.asList("https://loremflickr.com/cache/resized/65535_52893558487_b5dcac7206_n_320_240_nofilter.jpg"), "XDXD", "John Doe", "dummyData", "000-000-000-000", "https://avatars.githubusercontent.com/u/97165289")
-        );
+        AppHttpClient appHttpClient = new AppHttpClient(Session.getInstance().getToken());
+        appHttpClient.sendGetRequest("/posts")
+                .thenAccept(result -> {
+                    try {
+                        JSONObject jsonObject = new JSONObject(result);
+                        if (jsonObject.has("error")) {
+                            return;
+                        }
 
-        setupRecycleView(data);
+                        List<PostAdapter.PostData> data = new ArrayList<>();
+                        JSONArray posts = jsonObject.getJSONArray("posts");
+                        for (int i = 0; i < posts.length(); i++) {
+                            JSONObject p = posts.getJSONObject(i);
+                            String text = p.getString("text");
+
+                            ArrayList<String> urls = new ArrayList<>();
+                            JSONArray files = p.getJSONArray("files");
+                            for (int j = 0; j < files.length(); j++) {
+                                urls.add("https://oxyjen.io/assets/" +
+                                        files.getJSONObject(j).getString("FileName"));
+                            }
+
+                            JSONObject user = p.getJSONObject("user");
+                            String userId = user.getString("id");
+                            String username = user.getString("username");
+                            String displayName = user.getString("display_name");
+                            String profile_picture = user.getString("profile_picture").equals("") ?
+                                    "https://oxyjen.io/assets/default.jpg" :
+                                    "https://oxyjen.io/assets/" + user.getString("profile_picture");
+
+                            data.add(new PostAdapter.PostData(urls, text, displayName, username, userId, profile_picture));
+                        }
+
+                        requireActivity().runOnUiThread(() -> setupRecycleView(data));
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
 
         return view;
     }
