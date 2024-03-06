@@ -1,6 +1,5 @@
 package fr.devmobile.projetmobile.activities.fragments;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,7 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ViewSwitcher;
 
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import fr.devmobile.projetmobile.R;
-import fr.devmobile.projetmobile.activities.MainActivity;
 import fr.devmobile.projetmobile.adapters.PostAdapter;
 import fr.devmobile.projetmobile.adapters.UserAdapter;
 import fr.devmobile.projetmobile.models.Post;
@@ -90,7 +87,7 @@ public class SearchFragment extends Fragment {
         inputSearch.setOnKeyListener(enterListener);
         usersData = new ArrayList<UserAdapter.UserData>();
         postsData = new ArrayList<PostAdapter.PostData>();
-        refreshUsers("");
+        //FIXME: fait crash car les textview ne sont pas sur l'écran - refreshUsers("");
         refreshPost("");
         setupUserRecycleView();
         setupPostRecycleView();
@@ -123,8 +120,7 @@ public class SearchFragment extends Fragment {
             data.add(new UserAdapter.UserData(user));
         }
         usersData = data;
-        Log.i("users", usersData.toString());
-        userAdapter.notifyDataSetChanged();
+        userAdapter.setUsers(usersData);
     }
 
     private void postListToPostDataList(Map<Integer, List<Object>> posts){
@@ -133,8 +129,7 @@ public class SearchFragment extends Fragment {
             data.add(new PostAdapter.PostData((Post)entry.getValue().get(0), (User)entry.getValue().get(1)));
         }
         postsData = data;
-        Log.i("posts", postsData.toString());
-        postAdapter.notifyDataSetChanged();
+        postAdapter.setPosts(postsData);
     }
 
     private void setupUserRecycleView() {
@@ -174,7 +169,7 @@ public class SearchFragment extends Fragment {
                             User user = new User(jsonUser.getString("id"), jsonUser.getString("username"), jsonUser.getString("display_name"), "");
                             users.add(user);
                         }
-                        userListToUserDataList(users);
+                        requireActivity().runOnUiThread(() -> userListToUserDataList(users));
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
                     }
@@ -196,13 +191,14 @@ public class SearchFragment extends Fragment {
                             JSONArray files = jsonPost.getJSONArray("files");
                             List<String> postUrls = new ArrayList<String>();
                             for(int j = 0; j<files.length(); j++){
-                                postUrls.add(files.getJSONObject(j).getString("FileName"));
+                                postUrls.add("https://oxyjen.io/assets/" + files.getJSONObject(j).getString("FileName"));
                             }
                             Post post = new Post(jsonPost.getString("id"), jsonPost.getString("text"), postUrls);
                             User user = new User(jsonUser.getString("id"), jsonUser.getString("username"), jsonUser.getString("display_name"), "");
                             posts.put(i, Arrays.asList(post, user));
                         }
-                        postListToPostDataList(posts);
+
+                        requireActivity().runOnUiThread(() -> postListToPostDataList(posts));
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
                     }

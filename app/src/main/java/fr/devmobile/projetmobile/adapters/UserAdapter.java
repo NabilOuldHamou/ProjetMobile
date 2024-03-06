@@ -8,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -41,6 +40,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
         holder.textViewUsername.setText(user.getUsername());
         Glide.with(context).load(user.getUserAvatar()).into(holder.avatarImageView);
+    }
+
+    public void setUsers(List<UserData> users) {
+        this.users = users;
+        notifyDataSetChanged();
     }
 
     @Override

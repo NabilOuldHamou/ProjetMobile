@@ -45,6 +45,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         Glide.with(context).load(post.getAuthorProfilePic()).into(holder.avatarImageView);
     }
 
+    public void setPosts(List<PostData> posts) {
+        this.posts = posts;
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
         return posts.size();
