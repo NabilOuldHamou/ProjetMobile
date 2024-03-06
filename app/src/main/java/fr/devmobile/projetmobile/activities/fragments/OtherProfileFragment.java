@@ -1,18 +1,16 @@
 package fr.devmobile.projetmobile.activities.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
@@ -24,9 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.devmobile.projetmobile.R;
-import fr.devmobile.projetmobile.activities.LoginActivity;
 import fr.devmobile.projetmobile.adapters.ImageAdapter;
-import fr.devmobile.projetmobile.adapters.UserAdapter;
 import fr.devmobile.projetmobile.models.Post;
 import fr.devmobile.projetmobile.models.User;
 import fr.devmobile.projetmobile.network.AppHttpClient;
@@ -46,6 +42,7 @@ public class OtherProfileFragment extends Fragment {
     private ImageView profilePictureView;
     private TextView usernameView;
     private TextView displayNameView;
+    private ImageView returnButton;
     private String id;
     private User user;
 
@@ -55,7 +52,7 @@ public class OtherProfileFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static OtherProfileFragment  newInstance(String id){
+    public static OtherProfileFragment newInstance(String id){
         OtherProfileFragment fragment = new OtherProfileFragment();
         Bundle args = new Bundle();
         args.putString(ARG_ID, id);
@@ -79,6 +76,10 @@ public class OtherProfileFragment extends Fragment {
         profilePictureView = (ImageView) view.findViewById(R.id.profile_picture);
         usernameView = (TextView) view.findViewById(R.id.profile_username);
         displayNameView = (TextView) view.findViewById(R.id.profile_displayname);
+        returnButton = (ImageView) view.findViewById(R.id.return_fragment_button);
+
+        // RETURN BUTTON LOGIC
+        returnButton.setOnClickListener(v -> returnToPreviousFragment());
 
         refreshUser(this.id, view);
         return view;
@@ -121,5 +122,9 @@ public class OtherProfileFragment extends Fragment {
             result.add(new Post(p.getString("ID"), p.getString("Text"), postUrls));
         }
         return result;
+    }
+
+    public void returnToPreviousFragment(){
+        requireActivity().getSupportFragmentManager().popBackStack();
     }
 }
