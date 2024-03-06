@@ -1,7 +1,7 @@
 package fr.devmobile.projetmobile.adapters;
 
 import android.content.Context;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,7 +74,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
         public View.OnClickListener userSelect = (view) -> {
             UserData userData = users.get(getAdapterPosition());
-            activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, OtherProfileFragment.newInstance(userData)).addToBackStack(null).commit();
+            activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, OtherProfileFragment.newInstance(userData.getId())).addToBackStack(null).commit();
         };
 
     }

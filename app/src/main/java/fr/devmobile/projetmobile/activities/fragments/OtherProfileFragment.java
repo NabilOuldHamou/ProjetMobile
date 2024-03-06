@@ -15,6 +15,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.devmobile.projetmobile.R;
@@ -23,6 +28,7 @@ import fr.devmobile.projetmobile.adapters.ImageAdapter;
 import fr.devmobile.projetmobile.adapters.UserAdapter;
 import fr.devmobile.projetmobile.models.Post;
 import fr.devmobile.projetmobile.models.User;
+import fr.devmobile.projetmobile.network.AppHttpClient;
 import fr.devmobile.projetmobile.session.Session;
 
 /**
@@ -33,10 +39,6 @@ import fr.devmobile.projetmobile.session.Session;
 public class OtherProfileFragment extends Fragment {
 
     private static final String ARG_ID = "id";
-    private static final String ARG_USERNAME = "username";
-
-    private static final String ARG_DISPLAYNAME = "display_name";
-    private static final String ARG_AVATAR_URL = "avatar_url";
 
     private RecyclerView recyclerView;
     private ImageAdapter imageAdapter;
@@ -44,21 +46,18 @@ public class OtherProfileFragment extends Fragment {
     private TextView usernameView;
     private TextView displayNameView;
     private String id;
-    private String username;
-    private String displayName;
-    private String avatarUrl;
+    private User user;
+
+    private List<Post> posts;
 
     public OtherProfileFragment() {
         // Required empty public constructor
     }
 
-    public static OtherProfileFragment  newInstance(UserAdapter.UserData user){
+    public static OtherProfileFragment  newInstance(String id){
         OtherProfileFragment fragment = new OtherProfileFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_ID, user.getId());
-        args.putString(ARG_USERNAME, user.getUsername());
-        args.putString(ARG_DISPLAYNAME, user.getDisplayName());
-        args.putString(ARG_AVATAR_URL, user.getUserAvatar());
+        args.putString(ARG_ID, id);
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,9 +67,6 @@ public class OtherProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             id = getArguments().getString(ARG_ID);
-            username = getArguments().getString(ARG_USERNAME);
-            displayName = getArguments().getString(ARG_DISPLAYNAME);
-            avatarUrl = getArguments().getString(ARG_AVATAR_URL);
         }
     }
 
@@ -83,19 +79,45 @@ public class OtherProfileFragment extends Fragment {
         usernameView = (TextView) view.findViewById(R.id.profile_username);
         displayNameView = (TextView) view.findViewById(R.id.profile_displayname);
 
-        usernameView.setText(username);
-        displayNameView.setText(displayName);
-        Glide.with(this).load(avatarUrl).into(profilePictureView);
-
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_profile);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
-
-        /*
-        imageAdapter = new ImageAdapter(getContext(), posts);
-        recyclerView.setAdapter(imageAdapter);
-        imageAdapter.notifyDataSetChanged();
-         */
-
+        refreshUser(this.id, view);
         return view;
+    }
+
+    private void refreshUser(String id, View view){
+        AppHttpClient appHttpClient = new AppHttpClient(Session.getInstance().getToken());
+        appHttpClient.sendGetRequest("/users/"+id)
+                .thenAccept(result -> {
+                    try {
+                        JSONObject jsonUser = new JSONObject(result);
+                        user = new User(jsonUser.getString("ID") , jsonUser.getString("Username") , jsonUser.getString("DisplayName"), jsonUser.getString("Email"));
+                        posts = jsonArrayToPostArray(jsonUser.getJSONArray("Posts"));
+                        requireActivity().runOnUiThread(() ->{
+                            usernameView.setText(user.getUsername());
+                            displayNameView.setText(user.getDisplayName());
+                            Glide.with(this).load(user.getAvatar()).into(profilePictureView);
+                            recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_profile);
+                            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+                            imageAdapter = new ImageAdapter(getContext(), posts);
+                            recyclerView.setAdapter(imageAdapter);
+                            imageAdapter.notifyDataSetChanged();
+                        });
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+    }
+
+    private List<Post> jsonArrayToPostArray(JSONArray posts) throws JSONException {
+        List<Post> result = new ArrayList<Post>();
+        for(int i = 0; i < posts.length(); i++){
+            JSONObject p = posts.getJSONObject(i);
+            JSONArray files = p.getJSONArray("files");
+            List<String> postUrls = new ArrayList<String>();
+            for(int j = 0; j<files.length(); j++){
+                postUrls.add("https://oxyjen.io/assets/" + files.getJSONObject(j).getString("FileName"));
+            }
+            result.add(new Post(p.getString("id"), p.getString("text"), postUrls));
+        }
+        return result;
     }
 }
