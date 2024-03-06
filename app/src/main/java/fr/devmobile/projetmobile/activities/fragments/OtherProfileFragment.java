@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -108,15 +109,16 @@ public class OtherProfileFragment extends Fragment {
     }
 
     private List<Post> jsonArrayToPostArray(JSONArray posts) throws JSONException {
+        Log.i("posts", posts.toString());
         List<Post> result = new ArrayList<Post>();
         for(int i = 0; i < posts.length(); i++){
             JSONObject p = posts.getJSONObject(i);
-            JSONArray files = p.getJSONArray("files");
+            JSONArray files = p.getJSONArray("Files");
             List<String> postUrls = new ArrayList<String>();
             for(int j = 0; j<files.length(); j++){
                 postUrls.add("https://oxyjen.io/assets/" + files.getJSONObject(j).getString("FileName"));
             }
-            result.add(new Post(p.getString("id"), p.getString("text"), postUrls));
+            result.add(new Post(p.getString("ID"), p.getString("Text"), postUrls));
         }
         return result;
     }
