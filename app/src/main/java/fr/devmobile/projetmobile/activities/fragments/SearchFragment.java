@@ -87,10 +87,10 @@ public class SearchFragment extends Fragment {
         inputSearch.setOnKeyListener(enterListener);
         usersData = new ArrayList<UserAdapter.UserData>();
         postsData = new ArrayList<PostAdapter.PostData>();
-        //FIXME: fait crash car les textview ne sont pas sur l'écran - refreshUsers("");
-        refreshPost("");
-        setupUserRecycleView();
         setupPostRecycleView();
+        setupUserRecycleView();
+        refreshPost("");
+        refreshUsers("");
         return view;
     }
 
@@ -106,9 +106,8 @@ public class SearchFragment extends Fragment {
     public View.OnKeyListener enterListener = (view, keyCode, event) -> {
         if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
             String search = inputSearch.getText().toString();
-            Log.i("Search", search);
-            refreshUsers(search);
             refreshPost(search);
+            refreshUsers(search);
             return true;
         }
         return false;
@@ -133,7 +132,7 @@ public class SearchFragment extends Fragment {
     }
 
     private void setupUserRecycleView() {
-        userAdapter = new UserAdapter(usersData, requireContext());
+        userAdapter = new UserAdapter(usersData, requireContext(), requireActivity());
         userList.setAdapter(userAdapter);
         userList.setLayoutManager(new LinearLayoutManager(requireContext()));
     }
