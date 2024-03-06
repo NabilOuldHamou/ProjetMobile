@@ -18,6 +18,8 @@ import java.util.List;
 
 import fr.devmobile.projetmobile.R;
 import fr.devmobile.projetmobile.adapters.PostAdapter;
+import fr.devmobile.projetmobile.models.Post;
+import fr.devmobile.projetmobile.models.User;
 import fr.devmobile.projetmobile.network.AppHttpClient;
 import fr.devmobile.projetmobile.session.Session;
 
@@ -55,6 +57,7 @@ public class HomeFragment extends Fragment {
                         JSONArray posts = jsonObject.getJSONArray("posts");
                         for (int i = 0; i < posts.length(); i++) {
                             JSONObject p = posts.getJSONObject(i);
+                            String postId = p.getString("id");
                             String text = p.getString("text");
 
                             ArrayList<String> urls = new ArrayList<>();
@@ -64,15 +67,18 @@ public class HomeFragment extends Fragment {
                                         files.getJSONObject(j).getString("FileName"));
                             }
 
-                            JSONObject user = p.getJSONObject("user");
-                            String userId = user.getString("id");
-                            String username = user.getString("username");
-                            String displayName = user.getString("display_name");
-                            String profile_picture = user.getString("profile_picture").equals("") ?
+                            JSONObject userObject = p.getJSONObject("user");
+                            String userId = userObject.getString("id");
+                            String username = userObject.getString("username");
+                            String displayName = userObject.getString("display_name");
+                            String profile_picture = userObject.getString("profile_picture").equals("") ?
                                     "https://oxyjen.io/assets/default.jpg" :
-                                    "https://oxyjen.io/assets/" + user.getString("profile_picture");
+                                    "https://oxyjen.io/assets/" + userObject.getString("profile_picture");
 
-                            data.add(new PostAdapter.PostData(urls, text, displayName, username, userId, profile_picture));
+                            Post post = new Post(postId, text, urls);
+                            User user = new User(userId, profile_picture, username, displayName, "");
+
+                            data.add(new PostAdapter.PostData(post, user));
                         }
 
                         requireActivity().runOnUiThread(() -> setupRecycleView(data));
