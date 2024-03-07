@@ -8,7 +8,7 @@ import androidx.room.Update;
 
 import java.util.List;
 
-import fr.devmobile.projetmobile.models.User;
+import fr.devmobile.projetmobile.database.models.User;
 import io.reactivex.rxjava3.core.Single;
 
 @Dao

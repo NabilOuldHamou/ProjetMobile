@@ -27,8 +27,8 @@ import java.util.Map;
 import fr.devmobile.projetmobile.R;
 import fr.devmobile.projetmobile.adapters.PostAdapter;
 import fr.devmobile.projetmobile.adapters.UserAdapter;
-import fr.devmobile.projetmobile.models.Post;
-import fr.devmobile.projetmobile.models.User;
+import fr.devmobile.projetmobile.database.models.Post;
+import fr.devmobile.projetmobile.database.models.User;
 import fr.devmobile.projetmobile.network.AppHttpClient;
 import fr.devmobile.projetmobile.session.Session;
 
@@ -164,7 +164,9 @@ public class SearchFragment extends Fragment {
                         JSONArray jsonUsers = jsonObject.getJSONArray("users");
                         for(int i = 0; i<jsonUsers.length(); i++){
                             JSONObject jsonUser = jsonUsers.getJSONObject(i);
-                            User user = new User(jsonUser.getString("id"), jsonUser.getString("username"), jsonUser.getString("display_name"), "");
+                            String avatar = jsonUser.getString("profile_picture");
+                            String avatarUrl = avatar.isEmpty() ? "https://oxyjen.io/assets/default.jpg" : "https://oxyjen.io/assets/" + avatar;
+                            User user = new User(jsonUser.getString("id"), avatarUrl, jsonUser.getString("username"), jsonUser.getString("display_name"), "");
                             users.add(user);
                         }
                         requireActivity().runOnUiThread(() -> userListToUserDataList(users));
@@ -187,12 +189,14 @@ public class SearchFragment extends Fragment {
                             JSONObject jsonPost = jsonPosts.getJSONObject(i);
                             JSONObject jsonUser = jsonPost.getJSONObject("user");
                             JSONArray files = jsonPost.getJSONArray("files");
+                            String avatar = jsonUser.getString("profile_picture");
+                            String avatarUrl = avatar.isEmpty() ? "https://oxyjen.io/assets/default.jpg" : "https://oxyjen.io/assets/" + avatar;
                             List<String> postUrls = new ArrayList<String>();
                             for(int j = 0; j<files.length(); j++){
                                 postUrls.add("https://oxyjen.io/assets/" + files.getJSONObject(j).getString("FileName"));
                             }
                             Post post = new Post(jsonPost.getString("id"), jsonPost.getString("text"), postUrls);
-                            User user = new User(jsonUser.getString("id"), jsonUser.getString("username"), jsonUser.getString("display_name"), "");
+                            User user = new User(jsonUser.getString("id"), avatarUrl, jsonUser.getString("username"), jsonUser.getString("display_name"), "");
                             posts.put(i, Arrays.asList(post, user));
                         }
 

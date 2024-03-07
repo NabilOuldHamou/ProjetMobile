@@ -9,8 +9,8 @@ import androidx.room.Room;
 import java.util.List;
 
 import fr.devmobile.projetmobile.database.AppDatabase;
-import fr.devmobile.projetmobile.models.Post;
-import fr.devmobile.projetmobile.models.User;
+import fr.devmobile.projetmobile.database.models.Post;
+import fr.devmobile.projetmobile.database.models.User;
 import fr.devmobile.projetmobile.network.AppHttpClient;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 

@@ -1,4 +1,4 @@
-package fr.devmobile.projetmobile.models;
+package fr.devmobile.projetmobile.database.models;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;

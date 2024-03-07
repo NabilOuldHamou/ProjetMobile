@@ -86,13 +86,14 @@ public class PostFragment extends Fragment {
         appHttpClient.uploadPost(desc, files)
                 .thenAccept(r -> {
 
-                    Toast.makeText(requireContext(), "Vous venez de mettre en ligne un nouveau post!"
-                            , Toast.LENGTH_LONG).show();
-
-                    FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.fragment_container, new HomeFragment());
-                    fragmentTransaction.commit();
+                    requireActivity().runOnUiThread(() -> {
+                        Toast.makeText(requireContext(), "Vous venez de mettre un nouveau post en ligne!"
+                                , Toast.LENGTH_LONG).show();
+                        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.fragment_container, new HomeFragment());
+                        fragmentTransaction.commit();
+                    });
                 });
     }
 
