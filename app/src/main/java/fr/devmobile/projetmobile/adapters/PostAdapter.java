@@ -5,9 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -15,6 +17,7 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 import fr.devmobile.projetmobile.R;
+import fr.devmobile.projetmobile.activities.fragments.OtherProfileFragment;
 import fr.devmobile.projetmobile.models.Post;
 import fr.devmobile.projetmobile.models.User;
 
@@ -22,10 +25,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     private List<PostData> posts;
     private Context context;
+    private FragmentActivity activity;
 
-    public PostAdapter(List<PostData> posts, Context context) {
+    public PostAdapter(List<PostData> posts, Context context, FragmentActivity activity) {
         this.posts = posts;
         this.context = context;
+        this.activity = activity;
     }
 
     public void setPosts(List<PostData> posts) {
@@ -55,7 +60,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return posts.size();
     }
 
-    public static class PostViewHolder extends RecyclerView.ViewHolder {
+    public class PostViewHolder extends RecyclerView.ViewHolder {
+
+        private LinearLayout userData;
         private TextView textViewUsername;
         private TextView textViewDescription;
         private ImageView imageViewPost;
@@ -67,7 +74,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             textViewDescription = itemView.findViewById(R.id.textViewDescription);
             imageViewPost = itemView.findViewById(R.id.imageViewPost);
             avatarImageView = itemView.findViewById(R.id.avatarImageView);
+            userData = itemView.findViewById(R.id.userData);
+            userData.setOnClickListener(userSelect);
         }
+
+        public View.OnClickListener userSelect = (view) -> {
+            PostData postData = posts.get(getAdapterPosition());
+            activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, OtherProfileFragment.newInstance(postData.getAuthorId())).addToBackStack(null).commit();
+        };
     }
 
     public static class PostData {

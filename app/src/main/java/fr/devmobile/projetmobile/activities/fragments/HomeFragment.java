@@ -92,7 +92,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupRecycleView(List<PostAdapter.PostData> posts) {
-        postAdapter = new PostAdapter(posts, requireContext());
+        postAdapter = new PostAdapter(posts, requireContext(), requireActivity());
         recyclerView.setAdapter(postAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
     }
