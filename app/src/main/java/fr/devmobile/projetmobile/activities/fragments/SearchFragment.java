@@ -137,7 +137,7 @@ public class SearchFragment extends Fragment {
     }
 
     private void setupPostRecycleView() {
-        postAdapter = new PostAdapter(postsData, requireContext());
+        postAdapter = new PostAdapter(postsData, requireContext(), requireActivity());
         postList.setAdapter(postAdapter);
         postList.setLayoutManager(new LinearLayoutManager(requireContext()));
     }
