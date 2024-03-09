@@ -2,6 +2,7 @@ package fr.devmobile.projetmobile.activities.fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ViewSwitcher;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -56,6 +58,10 @@ public class SearchFragment extends Fragment {
 
     private List<PostAdapter.PostData> postsData;
 
+    private int currentPagePosts;
+
+    private int currentPageUsers;
+
     public SearchFragment() {
         // Required empty public constructor
     }
@@ -86,10 +92,18 @@ public class SearchFragment extends Fragment {
         inputSearch.setOnKeyListener(enterListener);
         usersData = new ArrayList<UserAdapter.UserData>();
         postsData = new ArrayList<PostAdapter.PostData>();
+
+        currentPageUsers = 1;
+        currentPagePosts = 1;
+
         setupPostRecycleView();
         setupUserRecycleView();
-        refreshPost("");
-        refreshUsers("");
+        refreshPosts("", currentPagePosts);
+        refreshUsers("", currentPageUsers);
+
+        postList.addOnScrollListener(scrollListenerPosts);
+        userList.addOnScrollListener(scrollListenerUsers);
+
         return view;
     }
 
@@ -105,28 +119,48 @@ public class SearchFragment extends Fragment {
     public View.OnKeyListener enterListener = (view, keyCode, event) -> {
         if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
             String search = inputSearch.getText().toString();
-            refreshPost(search);
-            refreshUsers(search);
+            currentPagePosts = 1;
+            currentPageUsers = 1;
+            refreshPosts(search, currentPagePosts);
+            refreshUsers(search, currentPageUsers);
             return true;
         }
         return false;
     };
 
-    private void userListToUserDataList(List<User> users){
-        List<UserAdapter.UserData> data = new ArrayList<UserAdapter.UserData>();
-        for(User user : users){
-            data.add(new UserAdapter.UserData(user));
+    public RecyclerView.OnScrollListener scrollListenerPosts = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            if (!recyclerView.canScrollVertically(1)) {
+                currentPagePosts++;
+                refreshPosts(inputSearch.getText().toString(), currentPagePosts);
+            }
         }
-        usersData = data;
+    };
+
+    public RecyclerView.OnScrollListener scrollListenerUsers = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            if (!recyclerView.canScrollVertically(1)) {
+                currentPageUsers++;
+                refreshUsers(inputSearch.getText().toString(), currentPageUsers);
+            }
+        }
+    };
+
+    private void userListToUserDataList(List<User> users){
+        for (User user : users) {
+            usersData.add(new UserAdapter.UserData(user));
+        }
         userAdapter.setUsers(usersData);
     }
 
     private void postListToPostDataList(Map<Integer, List<Object>> posts){
-        List<PostAdapter.PostData> data = new ArrayList<PostAdapter.PostData>();
         for (Map.Entry<Integer, List<Object>> entry : posts.entrySet()) {
-            data.add(new PostAdapter.PostData((Post)entry.getValue().get(0), (User)entry.getValue().get(1)));
+            postsData.add(new PostAdapter.PostData((Post)entry.getValue().get(0), (User)entry.getValue().get(1)));
         }
-        postsData = data;
         postAdapter.setPosts(postsData);
     }
 
@@ -153,11 +187,13 @@ public class SearchFragment extends Fragment {
         btn.setBackgroundColor(Color.BLACK);
     }
 
-    private void refreshUsers(String username){
+    private void refreshUsers(String username, int page){
         List<User> users = new ArrayList<User>();
-        usersData.clear();
+        if(page == 1){
+            usersData.clear();
+        }
         AppHttpClient appHttpClient = new AppHttpClient(Session.getInstance().getToken());
-        appHttpClient.sendGetRequest("/users?username=" + username + "&page=1")
+        appHttpClient.sendGetRequest("/users?username=" + username + "&page=" + page)
                 .thenAccept(result -> {
                     try {
                         JSONObject jsonObject = new JSONObject(result);
@@ -169,16 +205,21 @@ public class SearchFragment extends Fragment {
                         }
                         requireActivity().runOnUiThread(() -> userListToUserDataList(users));
                     } catch (JSONException e) {
+                        if(currentPageUsers > 1){
+                            currentPageUsers--;
+                        }
                         throw new RuntimeException(e);
                     }
                 });
     }
 
-    private void refreshPost(String query){
+    private void refreshPosts(String query, int page){
         Map<Integer, List<Object>> posts = new HashMap<Integer, List<Object>>();
-        postsData.clear();
+        if(page == 1){
+            postsData.clear();
+        }
         AppHttpClient appHttpClient = new AppHttpClient(Session.getInstance().getToken());
-        appHttpClient.sendGetRequest("/posts?query=" + query + "&page=1")
+        appHttpClient.sendGetRequest("/posts?query=" + query + "&page=" + page)
                 .thenAccept(result -> {
                     try {
                         JSONObject jsonObject = new JSONObject(result);
@@ -195,11 +236,14 @@ public class SearchFragment extends Fragment {
                             User user = new User(jsonUser.getString("id"), jsonUser.getString("username"), jsonUser.getString("display_name"), "");
                             posts.put(i, Arrays.asList(post, user));
                         }
-
                         requireActivity().runOnUiThread(() -> postListToPostDataList(posts));
                     } catch (JSONException e) {
+                        if(currentPagePosts > 1){
+                            currentPagePosts--;
+                        }
                         throw new RuntimeException(e);
                     }
                 });
     }
+
 }
