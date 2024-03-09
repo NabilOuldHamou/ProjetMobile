@@ -126,5 +126,6 @@ public class OtherProfileFragment extends Fragment {
 
     public void returnToPreviousFragment(){
         requireActivity().getSupportFragmentManager().popBackStack();
+
     }
 }
