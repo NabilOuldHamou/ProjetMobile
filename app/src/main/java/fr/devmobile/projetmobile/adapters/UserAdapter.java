@@ -18,7 +18,7 @@ import java.util.List;
 
 import fr.devmobile.projetmobile.R;
 import fr.devmobile.projetmobile.activities.fragments.OtherProfileFragment;
-import fr.devmobile.projetmobile.models.User;
+import fr.devmobile.projetmobile.database.models.User;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
 

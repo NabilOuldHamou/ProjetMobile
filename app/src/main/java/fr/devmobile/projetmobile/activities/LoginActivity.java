@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.devmobile.projetmobile.R;
-import fr.devmobile.projetmobile.models.Post;
-import fr.devmobile.projetmobile.models.User;
+import fr.devmobile.projetmobile.database.models.Post;
+import fr.devmobile.projetmobile.database.models.User;
 import fr.devmobile.projetmobile.network.AppHttpClient;
 import fr.devmobile.projetmobile.session.Session;
 
@@ -72,6 +72,7 @@ public class LoginActivity extends AppCompatActivity {
                         String username = userObject.getString("Username");
                         String displayName = userObject.getString("DisplayName");
                         String email = userObject.getString("Email");
+                        String avatar = userObject.getJSONObject("Avatar").getString("FileName");
 
                         JSONArray posts = userObject.getJSONArray("Posts");
                         for (int i = 0; i < posts.length(); i++) {
@@ -88,7 +89,9 @@ public class LoginActivity extends AppCompatActivity {
                             session.addPost(new Post(postId, postContent, urls));
                         }
 
-                        session.setUser(new User(id, username, displayName, email));
+                        String avatarUrl = avatar.isEmpty() ? "https://oxyjen.io/assets/default.jpg" : "https://oxyjen.io/assets/" + avatar;
+
+                        session.setUser(new User(id, avatarUrl, username, displayName, email));
                         session.saveToken(token);
 
                         startActivity(new Intent(this, MainActivity.class));

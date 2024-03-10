@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.fragments.SettingsFragment"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:gravity="center"
+        android:layout_height="50dp"
+        android:layout_width="match_parent">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Changer votre photo de profil" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:gravity="center"
+        android:layout_height="50dp"
+        android:layout_width="match_parent">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Modifier votre profil" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:gravity="center"
+        android:layout_height="50dp"
+        android:layout_width="match_parent">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Changer votre adresse email" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:gravity="center"
+        android:layout_height="50dp"
+        android:layout_width="match_parent">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Changer votre mot de passe" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:gravity="center"
+        android:layout_height="50dp"
+        android:layout_width="match_parent">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Déconnexion" />
+    </RelativeLayout>
+
+
+
+</LinearLayout>

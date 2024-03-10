@@ -1,6 +1,5 @@
 package fr.devmobile.projetmobile.activities.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,10 +18,9 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 import fr.devmobile.projetmobile.R;
-import fr.devmobile.projetmobile.activities.LoginActivity;
 import fr.devmobile.projetmobile.adapters.ImageAdapter;
-import fr.devmobile.projetmobile.models.Post;
-import fr.devmobile.projetmobile.models.User;
+import fr.devmobile.projetmobile.database.models.Post;
+import fr.devmobile.projetmobile.database.models.User;
 import fr.devmobile.projetmobile.session.Session;
 
 public class ProfileFragment extends Fragment {
@@ -59,10 +59,15 @@ public class ProfileFragment extends Fragment {
         // SETTINGS
         settingsButton = (ImageView) view.findViewById(R.id.settings_button);
         settingsButton.setOnClickListener(v -> {
-            session.deleteToken();
-            session.deleteUser();
-            startActivity(new Intent(getActivity(), LoginActivity.class));
-            requireActivity().finish();
+            //session.deleteToken();
+            //session.deleteUser();
+            //startActivity(new Intent(getActivity(), LoginActivity.class));
+            //requireActivity().finish();
+
+            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.fragment_container, new SettingsFragment());
+            fragmentTransaction.commit();
         });
 
         username.setText("@" + user.getUsername());

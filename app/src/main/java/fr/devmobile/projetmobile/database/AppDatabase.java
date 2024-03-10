@@ -6,8 +6,8 @@ import androidx.room.TypeConverters;
 
 import fr.devmobile.projetmobile.database.dao.PostDao;
 import fr.devmobile.projetmobile.database.dao.UserDao;
-import fr.devmobile.projetmobile.models.Post;
-import fr.devmobile.projetmobile.models.User;
+import fr.devmobile.projetmobile.database.models.Post;
+import fr.devmobile.projetmobile.database.models.User;
 
 @Database(entities = {User.class, Post.class}, version = 1)
 @TypeConverters({Converters.class})

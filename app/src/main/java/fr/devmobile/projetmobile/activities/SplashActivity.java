@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.devmobile.projetmobile.R;
-import fr.devmobile.projetmobile.models.Post;
+import fr.devmobile.projetmobile.database.models.Post;
 import fr.devmobile.projetmobile.network.AppHttpClient;
 import fr.devmobile.projetmobile.session.Session;
 

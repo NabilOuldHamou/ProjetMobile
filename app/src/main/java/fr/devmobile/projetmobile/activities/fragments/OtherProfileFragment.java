@@ -23,8 +23,8 @@ import java.util.List;
 
 import fr.devmobile.projetmobile.R;
 import fr.devmobile.projetmobile.adapters.ImageAdapter;
-import fr.devmobile.projetmobile.models.Post;
-import fr.devmobile.projetmobile.models.User;
+import fr.devmobile.projetmobile.database.models.Post;
+import fr.devmobile.projetmobile.database.models.User;
 import fr.devmobile.projetmobile.network.AppHttpClient;
 import fr.devmobile.projetmobile.session.Session;
 
