@@ -42,7 +42,9 @@ public class SearchFragment extends Fragment {
 
     private Button profilButton;
 
-    private List<Button> filterBtn = new ArrayList<Button>();;
+    private List<Button> filterBtn = new ArrayList<Button>();
+
+    private Integer currentPagePos;
 
     private ViewSwitcher searchSwitcher;
 
@@ -81,28 +83,40 @@ public class SearchFragment extends Fragment {
         postList = view.findViewById(R.id.post_list);
         userList = view.findViewById(R.id.user_list);
 
-        searchSwitcher.setDisplayedChild(0);
+        if(currentPagePos == null){
+            currentPagePos = 0;
+            searchSwitcher.setDisplayedChild(currentPagePos);
+        }else{
+            searchSwitcher.setDisplayedChild(currentPagePos);
+        }
+
+        Log.i("currentPagePos", Integer.toString(currentPagePos));
 
         filterBtn.add(postButton);
         filterBtn.add(profilButton);
-        postButton.setBackgroundColor(Color.BLACK);
+
+        activeStyle(filterBtn.get(currentPagePos));
+
         for(Button btn : filterBtn) {
             btn.setOnClickListener(clickListener);
         }
         inputSearch.setOnKeyListener(enterListener);
-        usersData = new ArrayList<UserAdapter.UserData>();
-        postsData = new ArrayList<PostAdapter.PostData>();
 
-        currentPageUsers = 1;
-        currentPagePosts = 1;
+        if(usersData == null){
+            usersData = new ArrayList<UserAdapter.UserData>();
+            currentPageUsers = 1;
+            refreshUsers("", currentPageUsers);
+        }
+        if(postsData == null){
+            postsData = new ArrayList<PostAdapter.PostData>();
+            currentPagePosts = 1;
+            refreshPosts("", currentPagePosts);
+        }
 
-        setupPostRecycleView();
         setupUserRecycleView();
-        refreshPosts("", currentPagePosts);
-        refreshUsers("", currentPageUsers);
-
-        postList.addOnScrollListener(scrollListenerPosts);
+        setupPostRecycleView();
         userList.addOnScrollListener(scrollListenerUsers);
+        postList.addOnScrollListener(scrollListenerPosts);
 
         return view;
     }
@@ -110,10 +124,11 @@ public class SearchFragment extends Fragment {
     public View.OnClickListener clickListener = (view) -> {
         activeStyle((Button)view);
         if(view.getId() == R.id.post_button){
-            searchSwitcher.setDisplayedChild(0);
+            currentPagePos = 0;
         }else if(view.getId() == R.id.user_button){
-            searchSwitcher.setDisplayedChild(1);
+            currentPagePos = 1;
         }
+        searchSwitcher.setDisplayedChild(currentPagePos);
     };
 
     public View.OnKeyListener enterListener = (view, keyCode, event) -> {
@@ -176,15 +191,15 @@ public class SearchFragment extends Fragment {
         postList.setLayoutManager(new LinearLayoutManager(requireContext()));
     }
 
-    private void resetStyle(){
-        for(Button btn : filterBtn){
-            btn.setBackgroundColor(Color.GRAY);
-        }
-    }
 
     private void activeStyle(Button btn){
-        resetStyle();
-        btn.setBackgroundColor(Color.BLACK);
+        for(Button b : filterBtn){
+            if(b.getId() == btn.getId()){
+                b.setBackgroundColor(Color.BLACK);
+            }else{
+                b.setBackgroundColor(Color.GRAY);
+            }
+        }
     }
 
     private void refreshUsers(String username, int page){
