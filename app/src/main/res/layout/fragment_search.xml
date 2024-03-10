@@ -62,27 +62,22 @@
             </LinearLayout>
         </HorizontalScrollView>
 
-        <ScrollView
+        <ViewSwitcher
+            android:id="@+id/search_switcher"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
-            <ViewSwitcher
-                android:id="@+id/search_switcher"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/post_list"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/post_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
-                </androidx.recyclerview.widget.RecyclerView>
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/user_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-            </ViewSwitcher>
-        </ScrollView>
+                android:layout_height="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
+            </androidx.recyclerview.widget.RecyclerView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/user_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        </ViewSwitcher>
 
     </LinearLayout>
 
