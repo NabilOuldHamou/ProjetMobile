@@ -32,6 +32,9 @@ import fr.devmobile.projetmobile.adapters.UserAdapter;
 import fr.devmobile.projetmobile.database.models.Post;
 import fr.devmobile.projetmobile.database.models.User;
 import fr.devmobile.projetmobile.network.AppHttpClient;
+import fr.devmobile.projetmobile.network.Callback;
+import fr.devmobile.projetmobile.network.PostRequest;
+import fr.devmobile.projetmobile.network.UserRequest;
 import fr.devmobile.projetmobile.session.Session;
 
 public class SearchFragment extends Fragment {
@@ -203,66 +206,50 @@ public class SearchFragment extends Fragment {
     }
 
     private void refreshUsers(String username, int page){
-        List<User> users = new ArrayList<User>();
         if(page == 1){
             usersData.clear();
         }
-        AppHttpClient appHttpClient = new AppHttpClient(Session.getInstance().getToken());
-        appHttpClient.sendGetRequest("/users?username=" + username + "&page=" + page)
-                .thenAccept(result -> {
-                    try {
-                        JSONObject jsonObject = new JSONObject(result);
-                        JSONArray jsonUsers = jsonObject.getJSONArray("users");
-                        for(int i = 0; i<jsonUsers.length(); i++){
-                            JSONObject jsonUser = jsonUsers.getJSONObject(i);
-                            String avatar = jsonUser.getString("profile_picture");
-                            String avatarUrl = avatar.isEmpty() ? "https://oxyjen.io/assets/default.jpg" : "https://oxyjen.io/assets/" + avatar;
-                            User user = new User(jsonUser.getString("id"), avatarUrl, jsonUser.getString("username"), jsonUser.getString("display_name"), "");
-                            users.add(user);
-                        }
-                        requireActivity().runOnUiThread(() -> userListToUserDataList(users));
-                    } catch (JSONException e) {
-                        if(currentPageUsers > 1){
-                            currentPageUsers--;
-                        }
-                        throw new RuntimeException(e);
-                    }
-                });
+        userList.removeOnScrollListener(scrollListenerUsers);
+        new UserRequest().findUsersByUsername(username, page,new Callback() {
+            @Override
+            public void onResponse(Object data) {
+                requireActivity().runOnUiThread(() -> userListToUserDataList((List<User>)data));
+                userList.addOnScrollListener(scrollListenerUsers);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                if(currentPageUsers > 1){
+                    currentPageUsers--;
+                }
+                userList.addOnScrollListener(scrollListenerUsers);
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     private void refreshPosts(String query, int page){
-        Map<Integer, List<Object>> posts = new HashMap<Integer, List<Object>>();
         if(page == 1){
             postsData.clear();
         }
-        AppHttpClient appHttpClient = new AppHttpClient(Session.getInstance().getToken());
-        appHttpClient.sendGetRequest("/posts?query=" + query + "&page=" + page)
-                .thenAccept(result -> {
-                    try {
-                        JSONObject jsonObject = new JSONObject(result);
-                        JSONArray jsonPosts = jsonObject.getJSONArray("posts");
-                        for(int i = 0; i<jsonPosts.length(); i++){
-                            JSONObject jsonPost = jsonPosts.getJSONObject(i);
-                            JSONObject jsonUser = jsonPost.getJSONObject("user");
-                            JSONArray files = jsonPost.getJSONArray("files");
-                            String avatar = jsonUser.getString("profile_picture");
-                            String avatarUrl = avatar.isEmpty() ? "https://oxyjen.io/assets/default.jpg" : "https://oxyjen.io/assets/" + avatar;
-                            List<String> postUrls = new ArrayList<String>();
-                            for(int j = 0; j<files.length(); j++){
-                                postUrls.add("https://oxyjen.io/assets/" + files.getJSONObject(j).getString("FileName"));
-                            }
-                            Post post = new Post(jsonPost.getString("id"), jsonPost.getString("text"), postUrls);
-                            User user = new User(jsonUser.getString("id"), avatarUrl, jsonUser.getString("username"), jsonUser.getString("display_name"), "");
-                            posts.put(i, Arrays.asList(post, user));
-                        }
-                        requireActivity().runOnUiThread(() -> postListToPostDataList(posts));
-                    } catch (JSONException e) {
-                        if(currentPagePosts > 1){
-                            currentPagePosts--;
-                        }
-                        throw new RuntimeException(e);
-                    }
-                });
+        postList.removeOnScrollListener(scrollListenerPosts);
+        new PostRequest().getAllPosts(query, page, new Callback() {
+
+            @Override
+            public void onResponse(Object data) {
+                requireActivity().runOnUiThread(() -> postListToPostDataList((Map<Integer,List<Object>>)data));
+                postList.addOnScrollListener(scrollListenerPosts);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                if(currentPagePosts > 1){
+                    currentPagePosts--;
+                }
+                postList.addOnScrollListener(scrollListenerPosts);
+                throw new RuntimeException(e);
+            }
+        });
     }
 
 }

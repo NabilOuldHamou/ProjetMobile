@@ -1,6 +1,7 @@
 package fr.devmobile.projetmobile.activities.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,16 +22,22 @@ import fr.devmobile.projetmobile.R;
 import fr.devmobile.projetmobile.adapters.ImageAdapter;
 import fr.devmobile.projetmobile.database.models.Post;
 import fr.devmobile.projetmobile.database.models.User;
+import fr.devmobile.projetmobile.network.Callback;
+import fr.devmobile.projetmobile.network.UserRequest;
 import fr.devmobile.projetmobile.session.Session;
 
 public class ProfileFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private ImageAdapter imageAdapter;
-    private ImageView profilePicture;
-    private TextView username;
-    private TextView displayName;
+    private ImageView profilePictureView;
+    private TextView usernameView;
+    private TextView displayNameView;
     private ImageView settingsButton;
+
+    private User user;
+
+    private List<Post> posts;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -52,9 +59,10 @@ public class ProfileFragment extends Fragment {
 
         // Affichage des informations de l'utilisateur en haut de la page
 
-        profilePicture = (ImageView) view.findViewById(R.id.profile_picture);
-        username = (TextView) view.findViewById(R.id.profile_username);
-        displayName = (TextView) view.findViewById(R.id.profile_displayname);
+        profilePictureView = view.findViewById(R.id.profile_picture);
+        usernameView = view.findViewById(R.id.profile_username);
+        displayNameView = view.findViewById(R.id.profile_displayname);
+        recyclerView = view.findViewById(R.id.recycler_view_profile);
 
         // SETTINGS
         settingsButton = (ImageView) view.findViewById(R.id.settings_button);
@@ -70,19 +78,39 @@ public class ProfileFragment extends Fragment {
             fragmentTransaction.commit();
         });
 
-        username.setText("@" + user.getUsername());
-        displayName.setText(user.getDisplayName());
-        Glide.with(this).load(user.getAvatar()).into(profilePicture);
-
-        // Affichage des posts de l'utilisateur
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_profile);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
-
         imageAdapter = new ImageAdapter(getContext(), posts);
         recyclerView.setAdapter(imageAdapter);
-        imageAdapter.notifyDataSetChanged();
+
+        requestUser(user.getId(), view);
 
         return view;
+    }
+
+    private void requestUser(String id, View view){
+        new UserRequest().findUserById(id, new Callback() {
+            @Override
+            public void onResponse(Object data) {
+                List<Object> objects = (List<Object>) data;
+                User user = (User) objects.get(0);
+                List<Post> posts = (List<Post>) objects.get(1);
+                setUser(user, posts);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private void setUser(User user, List<Post> posts){
+        this.user = user;
+        this.posts = posts;
+        usernameView.setText(user.getUsername());
+        displayNameView.setText(user.getDisplayName());
+        Glide.with(this).load(user.getAvatar()).into(profilePictureView);
+        imageAdapter.notifyDataSetChanged();
     }
 
 }

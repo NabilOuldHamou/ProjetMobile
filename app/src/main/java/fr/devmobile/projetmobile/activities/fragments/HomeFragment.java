@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,18 +16,25 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import fr.devmobile.projetmobile.R;
 import fr.devmobile.projetmobile.adapters.PostAdapter;
 import fr.devmobile.projetmobile.database.models.Post;
 import fr.devmobile.projetmobile.database.models.User;
 import fr.devmobile.projetmobile.network.AppHttpClient;
+import fr.devmobile.projetmobile.network.Callback;
+import fr.devmobile.projetmobile.network.PostRequest;
 import fr.devmobile.projetmobile.session.Session;
 
 public class HomeFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private PostAdapter postAdapter;
+
+    private List<PostAdapter.PostData> postsData;
+
+    private int currentPagePosts;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -44,57 +52,64 @@ public class HomeFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.home_recycler_view);
 
-        AppHttpClient appHttpClient = new AppHttpClient(Session.getInstance().getToken());
-        appHttpClient.sendGetRequest("/posts")
-                .thenAccept(result -> {
-                    try {
-                        JSONObject jsonObject = new JSONObject(result);
-                        if (jsonObject.has("error")) {
-                            return;
-                        }
+        if(postsData == null){
+            postsData = new ArrayList<PostAdapter.PostData>();
+            currentPagePosts = 1;
+            refreshPosts(currentPagePosts);
+        }
 
-                        List<PostAdapter.PostData> data = new ArrayList<>();
-                        JSONArray posts = jsonObject.getJSONArray("posts");
-                        for (int i = 0; i < posts.length(); i++) {
-                            JSONObject p = posts.getJSONObject(i);
-                            String postId = p.getString("id");
-                            String text = p.getString("text");
+        setupRecycleView();
 
-                            ArrayList<String> urls = new ArrayList<>();
-                            JSONArray files = p.getJSONArray("files");
-                            for (int j = 0; j < files.length(); j++) {
-                                urls.add("https://oxyjen.io/assets/" +
-                                        files.getJSONObject(j).getString("FileName"));
-                            }
-
-                            JSONObject userObject = p.getJSONObject("user");
-                            String userId = userObject.getString("id");
-                            String username = userObject.getString("username");
-                            String displayName = userObject.getString("display_name");
-                            String profile_picture = userObject.getString("profile_picture").equals("") ?
-                                    "https://oxyjen.io/assets/default.jpg" :
-                                    "https://oxyjen.io/assets/" + userObject.getString("profile_picture");
-
-                            Post post = new Post(postId, text, urls);
-                            User user = new User(userId, profile_picture, username, displayName, "");
-
-                            data.add(new PostAdapter.PostData(post, user));
-                        }
-
-                        requireActivity().runOnUiThread(() -> setupRecycleView(data));
-
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+        recyclerView.addOnScrollListener(scrollListenerPosts);
 
         return view;
     }
 
-    private void setupRecycleView(List<PostAdapter.PostData> posts) {
-        postAdapter = new PostAdapter(posts, requireContext(), requireActivity());
+    public RecyclerView.OnScrollListener scrollListenerPosts = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            if (!recyclerView.canScrollVertically(1)) {
+                currentPagePosts++;
+                refreshPosts(currentPagePosts);
+            }
+        }
+    };
+
+    private void setupRecycleView() {
+        postAdapter = new PostAdapter(postsData, requireContext(), requireActivity());
         recyclerView.setAdapter(postAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
     }
 
+    private void refreshPosts(int page) {
+        if (page == 1) {
+            postsData.clear();
+        }
+        recyclerView.removeOnScrollListener(scrollListenerPosts);
+        new PostRequest().getAllPosts("", page, new Callback() {
+
+            @Override
+            public void onResponse(Object data) {
+                requireActivity().runOnUiThread(() -> postListToPostDataList((Map<Integer, List<Object>>) data));
+                recyclerView.addOnScrollListener(scrollListenerPosts);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                if (currentPagePosts > 1) {
+                    currentPagePosts--;
+                }
+                recyclerView.addOnScrollListener(scrollListenerPosts);
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private void postListToPostDataList(Map<Integer, List<Object>> posts){
+        for (Map.Entry<Integer, List<Object>> entry : posts.entrySet()) {
+            postsData.add(new PostAdapter.PostData((Post)entry.getValue().get(0), (User)entry.getValue().get(1)));
+        }
+        postAdapter.setPosts(postsData);
+    }
 }

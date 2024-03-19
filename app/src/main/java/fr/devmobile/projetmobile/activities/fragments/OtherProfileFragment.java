@@ -26,6 +26,8 @@ import fr.devmobile.projetmobile.adapters.ImageAdapter;
 import fr.devmobile.projetmobile.database.models.Post;
 import fr.devmobile.projetmobile.database.models.User;
 import fr.devmobile.projetmobile.network.AppHttpClient;
+import fr.devmobile.projetmobile.network.Callback;
+import fr.devmobile.projetmobile.network.UserRequest;
 import fr.devmobile.projetmobile.session.Session;
 
 /**
@@ -73,55 +75,46 @@ public class OtherProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_other_profile, container, false);
 
-        profilePictureView = (ImageView) view.findViewById(R.id.profile_picture);
-        usernameView = (TextView) view.findViewById(R.id.profile_username);
-        displayNameView = (TextView) view.findViewById(R.id.profile_displayname);
-        returnButton = (ImageView) view.findViewById(R.id.return_fragment_button);
+        profilePictureView = view.findViewById(R.id.profile_picture);
+        usernameView = view.findViewById(R.id.profile_username);
+        displayNameView = view.findViewById(R.id.profile_displayname);
+        returnButton = view.findViewById(R.id.return_fragment_button);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_profile);
 
         // RETURN BUTTON LOGIC
         returnButton.setOnClickListener(v -> returnToPreviousFragment());
 
-        refreshUser(this.id, view);
+        requestUser(this.id, view);
         return view;
     }
 
-    private void refreshUser(String id, View view){
-        AppHttpClient appHttpClient = new AppHttpClient(Session.getInstance().getToken());
-        appHttpClient.sendGetRequest("/users/"+id)
-                .thenAccept(result -> {
-                    try {
-                        JSONObject jsonUser = new JSONObject(result);
-                        user = new User(jsonUser.getString("ID") , jsonUser.getString("Username") , jsonUser.getString("DisplayName"), jsonUser.getString("Email"));
-                        posts = jsonArrayToPostArray(jsonUser.getJSONArray("Posts"));
-                        requireActivity().runOnUiThread(() ->{
-                            usernameView.setText(user.getUsername());
-                            displayNameView.setText(user.getDisplayName());
-                            Glide.with(this).load(user.getAvatar()).into(profilePictureView);
-                            recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_profile);
-                            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
-                            imageAdapter = new ImageAdapter(getContext(), posts);
-                            recyclerView.setAdapter(imageAdapter);
-                            imageAdapter.notifyDataSetChanged();
-                        });
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+    private void requestUser(String id, View view){
+        new UserRequest().findUserById(id, new Callback() {
+            @Override
+            public void onResponse(Object data) {
+                List<Object> objects = (List<Object>) data;
+                User user = (User) objects.get(0);
+                List<Post> posts = (List<Post>) objects.get(1);
+                setUser(user, posts);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
-    private List<Post> jsonArrayToPostArray(JSONArray posts) throws JSONException {
-        Log.i("posts", posts.toString());
-        List<Post> result = new ArrayList<Post>();
-        for(int i = 0; i < posts.length(); i++){
-            JSONObject p = posts.getJSONObject(i);
-            JSONArray files = p.getJSONArray("Files");
-            List<String> postUrls = new ArrayList<String>();
-            for(int j = 0; j<files.length(); j++){
-                postUrls.add("https://oxyjen.io/assets/" + files.getJSONObject(j).getString("FileName"));
-            }
-            result.add(new Post(p.getString("ID"), p.getString("Text"), postUrls));
-        }
-        return result;
+    private void setUser(User user, List<Post> posts){
+        this.user = user;
+        this.posts = posts;
+        usernameView.setText(user.getUsername());
+        displayNameView.setText(user.getDisplayName());
+        Glide.with(this).load(user.getAvatar()).into(profilePictureView);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        imageAdapter = new ImageAdapter(getContext(), posts);
+        recyclerView.setAdapter(imageAdapter);
+        imageAdapter.notifyDataSetChanged();
     }
 
     public void returnToPreviousFragment(){
