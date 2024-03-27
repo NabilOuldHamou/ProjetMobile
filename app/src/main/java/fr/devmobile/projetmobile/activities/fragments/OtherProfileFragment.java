@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -39,6 +40,7 @@ public class OtherProfileFragment extends Fragment {
 
     private static final String ARG_ID = "id";
 
+    private ProgressBar progressBar;
     private RecyclerView recyclerView;
     private ImageAdapter imageAdapter;
     private ImageView profilePictureView;
@@ -79,7 +81,8 @@ public class OtherProfileFragment extends Fragment {
         usernameView = view.findViewById(R.id.profile_username);
         displayNameView = view.findViewById(R.id.profile_displayname);
         returnButton = view.findViewById(R.id.return_fragment_button);
-        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view_profile);
+        recyclerView = view.findViewById(R.id.recycler_view_profile);
+        progressBar = view.findViewById(R.id.progress_bar_profile);
 
         // RETURN BUTTON LOGIC
         returnButton.setOnClickListener(v -> returnToPreviousFragment());
@@ -89,18 +92,23 @@ public class OtherProfileFragment extends Fragment {
     }
 
     private void requestUser(String id, View view){
+        progressBar.setVisibility(View.VISIBLE);
         new UserRequest().findUserById(id, new Callback() {
             @Override
             public void onResponse(Object data) {
-                List<Object> objects = (List<Object>) data;
-                User user = (User) objects.get(0);
-                List<Post> posts = (List<Post>) objects.get(1);
-                setUser(user, posts);
+                requireActivity().runOnUiThread(() -> {
+                    List<Object> objects = (List<Object>) data;
+                    User user = (User) objects.get(0);
+                    List<Post> posts = (List<Post>) objects.get(1);
+                    setUser(user, posts);
+                    progressBar.setVisibility(View.INVISIBLE);
+                });
+
             }
 
             @Override
-            public void onError(Exception e) {
-                throw new RuntimeException(e);
+            public void onError(Object data) {
+                progressBar.setVisibility(View.INVISIBLE);
             }
         });
     }

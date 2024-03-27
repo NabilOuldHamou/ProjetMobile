@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.ViewSwitcher;
 
 import androidx.annotation.NonNull;
@@ -38,6 +39,10 @@ import fr.devmobile.projetmobile.network.UserRequest;
 import fr.devmobile.projetmobile.session.Session;
 
 public class SearchFragment extends Fragment {
+
+    private ProgressBar progressBarUsers;
+
+    private ProgressBar progressBarPosts;
 
     private EditText inputSearch;
 
@@ -85,6 +90,8 @@ public class SearchFragment extends Fragment {
         searchSwitcher = view.findViewById(R.id.search_switcher);
         postList = view.findViewById(R.id.post_list);
         userList = view.findViewById(R.id.user_list);
+        progressBarUsers = view.findViewById(R.id.progress_bar_search_users);
+        progressBarPosts = view.findViewById(R.id.progress_bar_search_posts);
 
         if(currentPagePos == null){
             currentPagePos = 0;
@@ -210,20 +217,27 @@ public class SearchFragment extends Fragment {
             usersData.clear();
         }
         userList.removeOnScrollListener(scrollListenerUsers);
+        progressBarUsers.setVisibility(View.VISIBLE);
         new UserRequest().findUsersByUsername(username, page,new Callback() {
             @Override
             public void onResponse(Object data) {
-                requireActivity().runOnUiThread(() -> userListToUserDataList((List<User>)data));
-                userList.addOnScrollListener(scrollListenerUsers);
+                requireActivity().runOnUiThread(() -> {
+                    userListToUserDataList((List<User>)data);
+                    userList.addOnScrollListener(scrollListenerUsers);
+                    progressBarUsers.setVisibility(View.INVISIBLE);
+                });
+
             }
 
             @Override
-            public void onError(Exception e) {
-                if(currentPageUsers > 1){
-                    currentPageUsers--;
-                }
-                userList.addOnScrollListener(scrollListenerUsers);
-                throw new RuntimeException(e);
+            public void onError(Object data) {
+                requireActivity().runOnUiThread(() -> {
+                    if(currentPageUsers > 1){
+                        currentPageUsers--;
+                    }
+                    userList.addOnScrollListener(scrollListenerUsers);
+                    progressBarUsers.setVisibility(View.INVISIBLE);
+                });
             }
         });
     }
@@ -233,21 +247,28 @@ public class SearchFragment extends Fragment {
             postsData.clear();
         }
         postList.removeOnScrollListener(scrollListenerPosts);
+        progressBarPosts.setVisibility(View.VISIBLE);
         new PostRequest().getAllPosts(query, page, new Callback() {
 
             @Override
             public void onResponse(Object data) {
-                requireActivity().runOnUiThread(() -> postListToPostDataList((Map<Integer,List<Object>>)data));
-                postList.addOnScrollListener(scrollListenerPosts);
+                requireActivity().runOnUiThread(() -> {
+                    postListToPostDataList((Map<Integer,List<Object>>)data);
+                    postList.addOnScrollListener(scrollListenerPosts);
+                    progressBarPosts.setVisibility(View.INVISIBLE);
+                });
+
             }
 
             @Override
-            public void onError(Exception e) {
-                if(currentPagePosts > 1){
-                    currentPagePosts--;
-                }
-                postList.addOnScrollListener(scrollListenerPosts);
-                throw new RuntimeException(e);
+            public void onError(Object data) {
+                requireActivity().runOnUiThread(() -> {
+                    if(currentPagePosts > 1){
+                        currentPagePosts--;
+                    }
+                    postList.addOnScrollListener(scrollListenerPosts);
+                    progressBarPosts.setVisibility(View.INVISIBLE);
+                });
             }
         });
     }
