@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -21,10 +22,13 @@ import fr.devmobile.projetmobile.R;
 import fr.devmobile.projetmobile.database.models.Post;
 import fr.devmobile.projetmobile.database.models.User;
 import fr.devmobile.projetmobile.network.AppHttpClient;
+import fr.devmobile.projetmobile.network.Callback;
+import fr.devmobile.projetmobile.network.UserRequest;
 import fr.devmobile.projetmobile.session.Session;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private ProgressBar progressBar;
     private EditText emailInput;
     private EditText passwordInput;
     private Button submitButton;
@@ -34,10 +38,11 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        emailInput = (EditText) findViewById(R.id.email_input);
-        passwordInput = (EditText) findViewById(R.id.password_input);
-        submitButton = (Button) findViewById(R.id.submit_button);
-        errorOutput = (TextView) findViewById(R.id.si_error_output);
+        emailInput = findViewById(R.id.email_input);
+        passwordInput = findViewById(R.id.password_input);
+        submitButton = findViewById(R.id.submit_button);
+        errorOutput = findViewById(R.id.si_error_output);
+        progressBar = findViewById(R.id.progress_bar);
     }
 
     public void signIn(View v) {
@@ -46,62 +51,27 @@ public class LoginActivity extends AppCompatActivity {
 
         if (!emailIn.isEmpty() && !passwordIn.isEmpty()) {
             submitButton.setClickable(false);
-            String body = String.format("{\"Email\": \"%s\", \"Password\": \"%s\"}",
-                    emailIn, passwordIn);
+            progressBar.setVisibility(View.VISIBLE);
+            new UserRequest().signIn(emailIn, passwordIn, new Callback() {
+                @Override
+                public void onResponse(Object data) {
+                    runOnUiThread(() -> {
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        finish();
+                    });
+                }
 
-            AppHttpClient appHttpClient = new AppHttpClient();
-            appHttpClient.sendPostRequest("/login", body)
-                .thenAccept(result -> {
-                    try {
-                        Session session = Session.getInstance();
-                        session.clearPosts();
-                        session.deleteToken();
-
-                        JSONObject jsonObject = new JSONObject(result);
-                        if (jsonObject.has("error")) {
-                            submitButton.setClickable(true);
-
-                            String error = jsonObject.getString("error");
-                            errorOutput.setText(error);
-                            return;
-                        }
-
-                        JSONObject userObject = jsonObject.getJSONObject("user");
-                        String token = jsonObject.getString("token");
-                        String id = userObject.getString("ID");
-                        String username = userObject.getString("Username");
-                        String displayName = userObject.getString("DisplayName");
-                        String email = userObject.getString("Email");
-                        String avatar = userObject.getJSONObject("Avatar").getString("FileName");
-
-                        JSONArray posts = userObject.getJSONArray("Posts");
-                        for (int i = 0; i < posts.length(); i++) {
-                            JSONObject post = posts.getJSONObject(i);
-                            String postId = post.getString("ID");
-                            String postContent = post.getString("Text");
-                            List<String> urls = new ArrayList<>();
-                            JSONArray files = post.getJSONArray("Files");
-                            for (int j = 0; j < files.length(); j++) {
-                                JSONObject file = files.getJSONObject(j);
-                                urls.add("https://oxyjen.io/assets/" + file.getString("FileName"));
-                            }
-
-                            session.addPost(new Post(postId, postContent, urls));
-                        }
-
-                        String avatarUrl = avatar.isEmpty() ? "https://oxyjen.io/assets/default.jpg" : "https://oxyjen.io/assets/" + avatar;
-
-                        session.setUser(new User(id, avatarUrl, username, displayName, email));
-                        session.saveToken(token);
-
-                        startActivity(new Intent(this, MainActivity.class));
-                        this.finish();
-
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                });
+                @Override
+                public void onError(Object data) {
+                    runOnUiThread(() -> {
+                        progressBar.setVisibility(View.INVISIBLE);
+                        submitButton.setClickable(true);
+                        String error = (String) data;
+                        errorOutput.setText(error);
+                        return;
+                    });
+                }
+            });
         }
 
     }

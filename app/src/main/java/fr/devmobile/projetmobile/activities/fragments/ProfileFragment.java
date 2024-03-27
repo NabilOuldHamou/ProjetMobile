@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -28,6 +29,7 @@ import fr.devmobile.projetmobile.session.Session;
 
 public class ProfileFragment extends Fragment {
 
+    private ProgressBar progressBar;
     private RecyclerView recyclerView;
     private ImageAdapter imageAdapter;
     private ImageView profilePictureView;
@@ -63,6 +65,7 @@ public class ProfileFragment extends Fragment {
         usernameView = view.findViewById(R.id.profile_username);
         displayNameView = view.findViewById(R.id.profile_displayname);
         recyclerView = view.findViewById(R.id.recycler_view_profile);
+        progressBar = view.findViewById(R.id.progress_bar);
 
         // SETTINGS
         settingsButton = (ImageView) view.findViewById(R.id.settings_button);
@@ -88,18 +91,24 @@ public class ProfileFragment extends Fragment {
     }
 
     private void requestUser(String id, View view){
+        progressBar.setVisibility(View.VISIBLE);
         new UserRequest().findUserById(id, new Callback() {
             @Override
             public void onResponse(Object data) {
-                List<Object> objects = (List<Object>) data;
-                User user = (User) objects.get(0);
-                List<Post> posts = (List<Post>) objects.get(1);
-                setUser(user, posts);
+                requireActivity().runOnUiThread(() -> {
+                    List<Object> objects = (List<Object>) data;
+                    User user = (User) objects.get(0);
+                    List<Post> posts = (List<Post>) objects.get(1);
+                    setUser(user, posts);
+                    progressBar.setVisibility(View.INVISIBLE);
+                });
             }
 
             @Override
-            public void onError(Exception e) {
-                throw new RuntimeException(e);
+            public void onError(Object data) {
+                requireActivity().runOnUiThread(() -> {
+                    progressBar.setVisibility(View.INVISIBLE);
+                });
             }
         });
     }
@@ -110,7 +119,7 @@ public class ProfileFragment extends Fragment {
         usernameView.setText(user.getUsername());
         displayNameView.setText(user.getDisplayName());
         Glide.with(this).load(user.getAvatar()).into(profilePictureView);
-        imageAdapter.notifyDataSetChanged();
+
     }
 
 }
