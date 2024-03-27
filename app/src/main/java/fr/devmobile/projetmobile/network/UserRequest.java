@@ -66,7 +66,7 @@ public class UserRequest {
                         callback.onResponse(null);
 
                     } catch (JSONException e) {
-                        throw new RuntimeException(e);
+                        callback.onError(e);
                     }
 
                 });
