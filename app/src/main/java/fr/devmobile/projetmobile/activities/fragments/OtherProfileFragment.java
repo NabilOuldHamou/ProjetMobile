@@ -82,7 +82,7 @@ public class OtherProfileFragment extends Fragment {
         displayNameView = view.findViewById(R.id.profile_displayname);
         returnButton = view.findViewById(R.id.return_fragment_button);
         recyclerView = view.findViewById(R.id.recycler_view_profile);
-        progressBar = view.findViewById(R.id.progress_bar_profile);
+        progressBar = view.findViewById(R.id.progress_bar);
 
         // RETURN BUTTON LOGIC
         returnButton.setOnClickListener(v -> returnToPreviousFragment());

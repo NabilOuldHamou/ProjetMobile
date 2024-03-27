@@ -5,21 +5,19 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import fr.devmobile.projetmobile.R;
-import fr.devmobile.projetmobile.database.models.User;
-import fr.devmobile.projetmobile.network.AppHttpClient;
-import fr.devmobile.projetmobile.session.Session;
+import fr.devmobile.projetmobile.network.Callback;
+import fr.devmobile.projetmobile.network.UserRequest;
 
 public class RegisterActivity extends AppCompatActivity {
 
+    private ProgressBar progressBar;
     private EditText username;
     private EditText email;
     private EditText password;
@@ -31,11 +29,12 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        username = (EditText) findViewById(R.id.usernameId);
-        email = (EditText) findViewById(R.id.emailId);
-        password = (EditText) findViewById(R.id.passwordId);
-        registerButton = (Button) findViewById(R.id.registerButton);
-        errorOutput = (TextView) findViewById(R.id.su_error_output);
+        username = findViewById(R.id.usernameId);
+        email = findViewById(R.id.emailId);
+        password = findViewById(R.id.passwordId);
+        registerButton = findViewById(R.id.registerButton);
+        errorOutput = findViewById(R.id.su_error_output);
+        progressBar = findViewById(R.id.progress_bar);
     }
 
     public void signUp(View v) {
@@ -45,41 +44,28 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (!emailIn.isEmpty() && !usernameIn.isEmpty() && !passwordIn.isEmpty()) {
             registerButton.setClickable(false);
-            String body = String.format("{\"Username\": \"%s\", \"DisplayName\": \"%s\", \"Email\": \"%s\", \"Password\": \"%s\"}",
-                    usernameIn, usernameIn, emailIn, passwordIn);
+            progressBar.setVisibility(View.VISIBLE);
+            new UserRequest().register(usernameIn, emailIn, passwordIn,new Callback(){
 
-            AppHttpClient appHttpClient = new AppHttpClient();
-            appHttpClient.sendPostRequest("/signup", body)
-                .thenAccept(result -> {
-                    try {
-                        JSONObject jsonObject = new JSONObject(result);
-                        if (jsonObject.has("error")) {
-                            registerButton.setClickable(true);
+                @Override
+                public void onResponse(Object data) {
+                    runOnUiThread(() -> {
+                        startActivity(new Intent(RegisterActivity.this, MainActivity.class));
+                        finish();
+                    });
+                }
 
-                            String error = jsonObject.getString("error");
-                            errorOutput.setText(error);
-                            return;
-                        }
-
-                        JSONObject userObjet = jsonObject.getJSONObject("user");
-                        String token = jsonObject.getString("token");
-                        String id = userObjet.getString("ID");
-                        String username = userObjet.getString("Username");
-                        String displayName = userObjet.getString("DisplayName");
-                        String email = userObjet.getString("Email");
-
-                        Session session = Session.getInstance();
-                        session.saveToken(token);
-                        session.setUser(new User(id, username, displayName, email));
-
-                        startActivity(new Intent(this, MainActivity.class));
-                        this.finish();
-
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                });
+                @Override
+                public void onError(Object data) {
+                    runOnUiThread(() -> {
+                        progressBar.setVisibility(View.INVISIBLE);
+                        registerButton.setClickable(true);
+                        String error = (String)data;
+                        errorOutput.setText(error);
+                        return;
+                    });
+                }
+            });
         }
     }
 

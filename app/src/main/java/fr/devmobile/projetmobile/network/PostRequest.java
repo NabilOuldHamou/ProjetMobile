@@ -17,7 +17,7 @@ import fr.devmobile.projetmobile.session.Session;
 public class PostRequest {
 
     public void getAllPosts(String query, int page, Callback callback) {
-        Map<Integer, List<Object>> posts = new HashMap<Integer, List<Object>>();
+        Map<Integer, List<Object>> posts = new HashMap<>();
         AppHttpClient appHttpClient = new AppHttpClient(Session.getInstance().getToken());
         appHttpClient.sendGetRequest("/posts?query=" + query + "&page=" + page)
                 .thenAccept(result -> {
@@ -30,7 +30,7 @@ public class PostRequest {
                             JSONArray files = jsonPost.getJSONArray("files");
                             String avatar = jsonUser.getString("profile_picture");
                             String avatarUrl = avatar.isEmpty() ? "https://oxyjen.io/assets/default.jpg" : "https://oxyjen.io/assets/" + avatar;
-                            List<String> postUrls = new ArrayList<String>();
+                            List<String> postUrls = new ArrayList<>();
                             for(int j = 0; j<files.length(); j++){
                                 postUrls.add("https://oxyjen.io/assets/" + files.getJSONObject(j).getString("FileName"));
                             }

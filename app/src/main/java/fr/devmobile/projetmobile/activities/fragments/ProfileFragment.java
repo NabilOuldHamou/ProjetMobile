@@ -65,7 +65,7 @@ public class ProfileFragment extends Fragment {
         usernameView = view.findViewById(R.id.profile_username);
         displayNameView = view.findViewById(R.id.profile_displayname);
         recyclerView = view.findViewById(R.id.recycler_view_profile);
-        progressBar = view.findViewById(R.id.progress_bar_profile);
+        progressBar = view.findViewById(R.id.progress_bar);
 
         // SETTINGS
         settingsButton = (ImageView) view.findViewById(R.id.settings_button);
