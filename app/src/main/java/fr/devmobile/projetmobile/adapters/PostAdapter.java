@@ -42,7 +42,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     @Override
     public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_post, parent, false);
-        return new PostViewHolder(view, context);
+        return new PostViewHolder(view);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         private ImageView imageViewPost;
         private ImageView avatarImageView;
 
-        public PostViewHolder(@NonNull View itemView, Context context) {
+        public PostViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewUsername = itemView.findViewById(R.id.textViewUsername);
             textViewDescription = itemView.findViewById(R.id.textViewDescription);

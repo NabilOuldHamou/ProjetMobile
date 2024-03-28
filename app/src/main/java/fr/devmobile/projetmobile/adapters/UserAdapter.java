@@ -37,7 +37,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     @Override
     public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_user_search, parent, false);
-        return new UserViewHolder(view, activity);
+        return new UserViewHolder(view);
     }
 
     @Override
@@ -64,15 +64,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
     public class UserViewHolder extends RecyclerView.ViewHolder {
         private TextView textViewUsername;
         private ImageView avatarImageView;
-        private FragmentActivity activity;
 
 
-        public UserViewHolder(@NonNull View itemView, FragmentActivity activity) {
+        public UserViewHolder(@NonNull View itemView) {
             super(itemView);
             itemView.setOnClickListener(userSelect);
             textViewUsername = itemView.findViewById(R.id.user_username);
             avatarImageView = itemView.findViewById(R.id.user_userpicture);
-            this.activity = activity;
         }
 
         public View.OnClickListener userSelect = (view) -> {
