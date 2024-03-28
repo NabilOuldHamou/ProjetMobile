@@ -23,17 +23,17 @@ import fr.devmobile.projetmobile.activities.fragments.OtherProfileFragment;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
-    private List<PostData> posts;
+    private List<Post> posts;
     private Context context;
     private FragmentActivity activity;
 
-    public PostAdapter(List<PostData> posts, Context context, FragmentActivity activity) {
+    public PostAdapter(List<Post> posts, Context context, FragmentActivity activity) {
         this.posts = posts;
         this.context = context;
         this.activity = activity;
     }
 
-    public void setPosts(List<PostData> posts) {
+    public void setPosts(List<Post> posts) {
         this.posts = posts;
         notifyDataSetChanged();
     }
@@ -47,12 +47,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
-        PostData post = posts.get(position);
-        holder.textViewUsername.setText(post.getUsername());
-        holder.textViewDescription.setText(post.getDescription());
+        Post post = posts.get(position);
+        holder.textViewUsername.setText(post.getUser().getUsername());
+        holder.textViewDescription.setText(post.getText());
 
-        Glide.with(context).load(post.getUrls().get(0)).into(holder.imageViewPost);
-        Glide.with(context).load(post.getAuthorProfilePic()).into(holder.avatarImageView);
+        Glide.with(context)
+                .load(post.getUrls().get(0))
+                .placeholder(R.drawable.logo)
+                .into(holder.imageViewPost);
+        Glide.with(context)
+                .load(post.getUser().getAvatar())
+                .placeholder(R.drawable.logo)
+                .into(holder.avatarImageView);
     }
 
     @Override
@@ -79,51 +85,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         }
 
         public View.OnClickListener userSelect = (view) -> {
-            PostData postData = posts.get(getAdapterPosition());
-            activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, OtherProfileFragment.newInstance(postData.getAuthorId())).addToBackStack(null).commit();
+            Post postData = posts.get(getAdapterPosition());
+            activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, OtherProfileFragment.newInstance(postData.getUser().getId())).addToBackStack(null).commit();
         };
-    }
-
-    public static class PostData {
-        private List<String> urls;
-        private String description;
-        private String author;
-        private String username;
-        private String authorId;
-        private String authorProfilePic;
-
-        public PostData(Post post, User user) {
-            this.urls = post.getUrls();
-            this.description = post.getText();
-            this.author = user.getDisplayName();
-            this.username = user.getUsername();
-            this.authorId = user.getId();
-            this.authorProfilePic = user.getAvatar();
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public String getAuthor() {
-            return author;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public String getAuthorId() {
-            return authorId;
-        }
-
-        public String getAuthorProfilePic() {
-            return authorProfilePic;
-        }
-
-        public List<String> getUrls() {
-            return urls;
-        }
-
     }
 }

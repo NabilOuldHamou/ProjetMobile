@@ -37,7 +37,7 @@ public class HomeFragment extends Fragment {
     private RecyclerView recyclerView;
     private PostAdapter postAdapter;
 
-    private List<PostAdapter.PostData> postsData;
+    private List<Post> postsData;
 
     private int currentPagePosts;
 
@@ -59,7 +59,7 @@ public class HomeFragment extends Fragment {
         progressBar = view.findViewById(R.id.progress_bar);
 
         if(postsData == null){
-            postsData = new ArrayList<PostAdapter.PostData>();
+            postsData = new ArrayList<Post>();
             currentPagePosts = 1;
             refreshPosts(currentPagePosts);
         }
@@ -102,9 +102,13 @@ public class HomeFragment extends Fragment {
                     if(currentPagePosts != 1){
                         recyclerView.setPadding(0,0,0,0);
                     }
-                    requireActivity().runOnUiThread(() -> postListToPostDataList((Map<Integer, List<Object>>) data));
-                    recyclerView.addOnScrollListener(scrollListenerPosts);
-                    progressBar.setVisibility(View.INVISIBLE);
+                    requireActivity().runOnUiThread(() -> {
+                        postsData.addAll((List<Post>) data);
+                        postAdapter.setPosts(postsData);
+                        recyclerView.addOnScrollListener(scrollListenerPosts);
+                        progressBar.setVisibility(View.INVISIBLE);
+                    });
+
                 });
             }
 
@@ -119,12 +123,5 @@ public class HomeFragment extends Fragment {
                 });
             }
         });
-    }
-
-    private void postListToPostDataList(Map<Integer, List<Object>> posts){
-        for (Map.Entry<Integer, List<Object>> entry : posts.entrySet()) {
-            postsData.add(new PostAdapter.PostData((Post)entry.getValue().get(0), (User)entry.getValue().get(1)));
-        }
-        postAdapter.setPosts(postsData);
     }
 }

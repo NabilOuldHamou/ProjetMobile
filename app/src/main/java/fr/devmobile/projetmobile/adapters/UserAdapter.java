@@ -22,12 +22,12 @@ import fr.devmobile.projetmobile.database.models.User;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
 
-    private List<UserData> users;
+    private List<User> users;
     private Context context;
 
     private FragmentActivity activity;
 
-    public UserAdapter(List<UserData> users, Context context, FragmentActivity activity) {
+    public UserAdapter(List<User> users, Context context, FragmentActivity activity) {
         this.users = users;
         this.context = context;
         this.activity = activity;
@@ -42,13 +42,16 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
-        UserData user = users.get(position);
+        User user = users.get(position);
 
         holder.textViewUsername.setText(user.getUsername());
-        Glide.with(context).load(user.getUserAvatar()).into(holder.avatarImageView);
+        Glide.with(context)
+                .load(user.getAvatar())
+                .placeholder(R.drawable.logo)
+                .into(holder.avatarImageView);
     }
 
-    public void setUsers(List<UserData> users) {
+    public void setUsers(List<User> users) {
         this.users = users;
         notifyDataSetChanged();
     }
@@ -73,56 +76,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         }
 
         public View.OnClickListener userSelect = (view) -> {
-            UserData userData = users.get(getAdapterPosition());
+            User userData = users.get(getAdapterPosition());
             activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, OtherProfileFragment.newInstance(userData.getId())).addToBackStack(null).commit();
         };
 
-    }
-
-    public static class UserData {
-
-        private String id;
-        private String username;
-        private String displayName;
-        private String userAvatar;
-
-        public UserData(User user) {
-            this.id = user.getId();
-            this.username = user.getUsername();
-            this.displayName = user.getDisplayName();
-            this.userAvatar = user.getAvatar();
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public void setUsername(String username) {
-            this.username = username;
-        }
-
-        public String getUserAvatar() {
-            return userAvatar;
-        }
-
-        public void setUserAvatar(String userAvatar) {
-            this.userAvatar = userAvatar;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public String getDisplayName() {
-            return displayName;
-        }
-
-        public void setDisplayName(String displayName) {
-            this.displayName = displayName;
-        }
     }
 }

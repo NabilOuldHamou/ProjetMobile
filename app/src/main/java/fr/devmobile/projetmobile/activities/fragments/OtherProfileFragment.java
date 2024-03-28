@@ -118,7 +118,10 @@ public class OtherProfileFragment extends Fragment {
         this.posts = posts;
         usernameView.setText(user.getUsername());
         displayNameView.setText(user.getDisplayName());
-        Glide.with(this).load(user.getAvatar()).into(profilePictureView);
+        Glide.with(this)
+                .load(user.getAvatar())
+                .placeholder(R.drawable.logo)
+                .into(profilePictureView);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
         imageAdapter = new ImageAdapter(getContext(), posts);
         recyclerView.setAdapter(imageAdapter);

@@ -64,9 +64,9 @@ public class SearchFragment extends Fragment {
 
     private PostAdapter postAdapter;
 
-    private List<UserAdapter.UserData> usersData;
+    private List<User> usersData;
 
-    private List<PostAdapter.PostData> postsData;
+    private List<Post> postsData;
 
     private int currentPagePosts;
 
@@ -113,12 +113,12 @@ public class SearchFragment extends Fragment {
         inputSearch.setOnKeyListener(enterListener);
 
         if(usersData == null){
-            usersData = new ArrayList<UserAdapter.UserData>();
+            usersData = new ArrayList<User>();
             currentPageUsers = 1;
             refreshUsers("", currentPageUsers);
         }
         if(postsData == null){
-            postsData = new ArrayList<PostAdapter.PostData>();
+            postsData = new ArrayList<Post>();
             currentPagePosts = 1;
             refreshPosts("", currentPagePosts);
         }
@@ -175,20 +175,6 @@ public class SearchFragment extends Fragment {
         }
     };
 
-    private void userListToUserDataList(List<User> users){
-        for (User user : users) {
-            usersData.add(new UserAdapter.UserData(user));
-        }
-        userAdapter.setUsers(usersData);
-    }
-
-    private void postListToPostDataList(Map<Integer, List<Object>> posts){
-        for (Map.Entry<Integer, List<Object>> entry : posts.entrySet()) {
-            postsData.add(new PostAdapter.PostData((Post)entry.getValue().get(0), (User)entry.getValue().get(1)));
-        }
-        postAdapter.setPosts(postsData);
-    }
-
     private void setupUserRecycleView() {
         userAdapter = new UserAdapter(usersData, requireContext(), requireActivity());
         userList.setAdapter(userAdapter);
@@ -222,7 +208,8 @@ public class SearchFragment extends Fragment {
             @Override
             public void onResponse(Object data) {
                 requireActivity().runOnUiThread(() -> {
-                    userListToUserDataList((List<User>)data);
+                    usersData.addAll((List<User>)data);
+                    userAdapter.setUsers(usersData);
                     userList.addOnScrollListener(scrollListenerUsers);
                     progressBarUsers.setVisibility(View.INVISIBLE);
                 });
@@ -253,7 +240,8 @@ public class SearchFragment extends Fragment {
             @Override
             public void onResponse(Object data) {
                 requireActivity().runOnUiThread(() -> {
-                    postListToPostDataList((Map<Integer,List<Object>>)data);
+                    postsData.addAll((List<Post>)data);
+                    postAdapter.setPosts(postsData);
                     postList.addOnScrollListener(scrollListenerPosts);
                     progressBarPosts.setVisibility(View.INVISIBLE);
                 });
