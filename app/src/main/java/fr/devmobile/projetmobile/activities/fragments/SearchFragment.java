@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.ViewSwitcher;
 
 import androidx.annotation.NonNull;
@@ -44,7 +45,7 @@ public class SearchFragment extends Fragment {
 
     private ProgressBar progressBarPosts;
 
-    private EditText inputSearch;
+    private SearchView inputSearch;
 
     private Button postButton;
 
@@ -100,8 +101,6 @@ public class SearchFragment extends Fragment {
             searchSwitcher.setDisplayedChild(currentPagePos);
         }
 
-        Log.i("currentPagePos", Integer.toString(currentPagePos));
-
         filterBtn.add(postButton);
         filterBtn.add(profilButton);
 
@@ -110,7 +109,8 @@ public class SearchFragment extends Fragment {
         for(Button btn : filterBtn) {
             btn.setOnClickListener(clickListener);
         }
-        inputSearch.setOnKeyListener(enterListener);
+        inputSearch.setOnQueryTextListener(enterListener);
+        inputSearch.setOnClickListener((v) -> {inputSearch.setIconified(false);});
 
         if(usersData == null){
             usersData = new ArrayList<User>();
@@ -141,16 +141,24 @@ public class SearchFragment extends Fragment {
         searchSwitcher.setDisplayedChild(currentPagePos);
     };
 
-    public View.OnKeyListener enterListener = (view, keyCode, event) -> {
-        if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-            String search = inputSearch.getText().toString();
+    public SearchView.OnQueryTextListener enterListener = new SearchView.OnQueryTextListener() {
+        @Override
+        public boolean onQueryTextSubmit(String query) {
             currentPagePosts = 1;
             currentPageUsers = 1;
-            refreshPosts(search, currentPagePosts);
-            refreshUsers(search, currentPageUsers);
-            return true;
+            refreshPosts(query, currentPagePosts);
+            refreshUsers(query, currentPageUsers);
+            return false;
         }
-        return false;
+
+        @Override
+        public boolean onQueryTextChange(String newText) {
+            currentPagePosts = 1;
+            currentPageUsers = 1;
+            refreshPosts(newText, currentPagePosts);
+            refreshUsers(newText, currentPageUsers);
+            return false;
+        }
     };
 
     public RecyclerView.OnScrollListener scrollListenerPosts = new RecyclerView.OnScrollListener() {
@@ -159,7 +167,7 @@ public class SearchFragment extends Fragment {
             super.onScrolled(recyclerView, dx, dy);
             if (!recyclerView.canScrollVertically(1)) {
                 currentPagePosts++;
-                refreshPosts(inputSearch.getText().toString(), currentPagePosts);
+                refreshPosts(inputSearch.getQuery().toString(), currentPagePosts);
             }
         }
     };
@@ -170,7 +178,7 @@ public class SearchFragment extends Fragment {
             super.onScrolled(recyclerView, dx, dy);
             if (!recyclerView.canScrollVertically(1)) {
                 currentPageUsers++;
-                refreshUsers(inputSearch.getText().toString(), currentPageUsers);
+                refreshUsers(inputSearch.getQuery().toString(), currentPageUsers);
             }
         }
     };
