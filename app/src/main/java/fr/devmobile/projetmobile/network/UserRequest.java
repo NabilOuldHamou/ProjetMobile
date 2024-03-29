@@ -66,7 +66,7 @@ public class UserRequest {
                         callback.onResponse(null);
 
                     } catch (JSONException e) {
-                        callback.onError(e);
+                        callback.onError("Error");
                     }
 
                 });

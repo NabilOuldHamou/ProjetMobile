@@ -4,11 +4,18 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+import fr.devmobile.projetmobile.database.models.Post;
+import fr.devmobile.projetmobile.session.Session;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
@@ -95,7 +102,19 @@ public class AppHttpClient {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                Log.d("Azote", "onResponse: " + response.body().string());
+                String text = response.body().string();
+                Log.d("Azote", "onResponse: " + text);
+                try {
+                    JSONObject post = new JSONObject(text).getJSONObject("post");
+                    List<String> urls = new ArrayList<>();
+                    JSONArray filesArray = post.getJSONArray("Files");
+                    for (int i = 0; i < filesArray.length(); i++) {
+                        urls.add("https://oxyjen.io/assets/" + filesArray.getJSONObject(i).getString("FileName"));
+                    }
+                    Session.getInstance().addPost(new Post(post.getString("ID"), text, urls));
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
                 future.complete(response.isSuccessful());
             }
         });
