@@ -10,27 +10,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
-        <LinearLayout
+        <SearchView
+            android:id="@+id/input_search"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/search" />
-            <EditText
-               android:inputType="text"
-                android:id="@+id/input_search"
-                android:hint="@string/search_page_input"
-                android:layout_weight="5"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:paddingHorizontal="10dp"/>
-
-        </LinearLayout>
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:clickable="true"
+            android:hint="@string/search_page_input"
+            android:inputType="text"
+            android:paddingHorizontal="10dp" />
 
         <HorizontalScrollView
             android:layout_width="match_parent"
