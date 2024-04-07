@@ -12,12 +12,12 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.ProjetMobile">
+
         <activity
             android:name=".activities.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -25,6 +25,13 @@
         <activity android:name=".activities.MainActivity"/>
         <activity android:name=".activities.LoginActivity"/>
         <activity android:name=".activities.RegisterActivity"/>
+
+        <receiver android:name=".broadcasts.TimeTickReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.TIME_TICK"/>
+            </intent-filter>
+        </receiver>
 
     </application>
 

@@ -144,10 +144,6 @@ public class SearchFragment extends Fragment {
     public SearchView.OnQueryTextListener enterListener = new SearchView.OnQueryTextListener() {
         @Override
         public boolean onQueryTextSubmit(String query) {
-            currentPagePosts = 1;
-            currentPageUsers = 1;
-            refreshPosts(query, currentPagePosts);
-            refreshUsers(query, currentPageUsers);
             return false;
         }
 
