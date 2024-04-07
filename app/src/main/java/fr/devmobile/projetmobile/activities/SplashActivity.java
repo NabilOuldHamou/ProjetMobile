@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.RoomDatabase;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.devmobile.projetmobile.R;
-import fr.devmobile.projetmobile.database.AppDatabase;
 import fr.devmobile.projetmobile.database.models.Post;
 import fr.devmobile.projetmobile.network.AppHttpClient;
 import fr.devmobile.projetmobile.session.Session;
