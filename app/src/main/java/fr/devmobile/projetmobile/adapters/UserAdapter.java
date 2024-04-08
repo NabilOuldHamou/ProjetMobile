@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 import fr.devmobile.projetmobile.R;
+import fr.devmobile.projetmobile.activities.MainActivity;
 import fr.devmobile.projetmobile.activities.fragments.OtherProfileFragment;
 import fr.devmobile.projetmobile.database.models.User;
 
@@ -75,7 +76,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
 
         public View.OnClickListener userSelect = (view) -> {
             User userData = users.get(getAdapterPosition());
-            activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, OtherProfileFragment.newInstance(userData.getId())).addToBackStack(null).commit();
+            int previousFragmentId = MainActivity.currentFragmentId;
+            MainActivity.currentFragmentId = R.layout.fragment_other_profile;
+            activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, OtherProfileFragment.newInstance(userData.getId(), previousFragmentId)).addToBackStack(null).commit();
         };
 
     }

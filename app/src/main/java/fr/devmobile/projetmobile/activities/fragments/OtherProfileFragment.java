@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.devmobile.projetmobile.R;
+import fr.devmobile.projetmobile.activities.MainActivity;
 import fr.devmobile.projetmobile.adapters.ImageAdapter;
 import fr.devmobile.projetmobile.database.models.Post;
 import fr.devmobile.projetmobile.database.models.User;
@@ -40,6 +41,10 @@ public class OtherProfileFragment extends Fragment {
 
     private static final String ARG_ID = "id";
 
+    private static final String ARG_PREVIOUS_FRAGMENT_ID = "previousFragmentId";
+
+    private int previousFragmentId;
+
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
     private ImageAdapter imageAdapter;
@@ -56,10 +61,11 @@ public class OtherProfileFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static OtherProfileFragment newInstance(String id){
+    public static OtherProfileFragment newInstance(String id, int previousFragmentId){
         OtherProfileFragment fragment = new OtherProfileFragment();
         Bundle args = new Bundle();
         args.putString(ARG_ID, id);
+        args.putInt(ARG_PREVIOUS_FRAGMENT_ID, previousFragmentId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -69,6 +75,7 @@ public class OtherProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             id = getArguments().getString(ARG_ID);
+            previousFragmentId = getArguments().getInt(ARG_PREVIOUS_FRAGMENT_ID);
         }
     }
 
@@ -129,7 +136,22 @@ public class OtherProfileFragment extends Fragment {
     }
 
     public void returnToPreviousFragment(){
-        requireActivity().getSupportFragmentManager().popBackStack();
+        switch (previousFragmentId){
+            case R.id.action_home:
+                requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
+                break;
+            case R.id.action_search:
+                requireActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SearchFragment()).commit();
+                break;
+        }
+        MainActivity.currentFragmentId = previousFragmentId;
+    }
 
+    public User getUser() {
+        return user;
+    }
+
+    public int getPreviousFragmentId() {
+        return previousFragmentId;
     }
 }
