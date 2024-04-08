@@ -7,56 +7,32 @@
     tools:context=".activities.fragments.SettingsFragment"
     android:orientation="vertical">
 
-    <RelativeLayout
-        android:gravity="center"
+    <TextView
+        android:id="@+id/tv_change_profile_picture"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_width="match_parent">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Changer votre photo de profil" />
-    </RelativeLayout>
-
-    <RelativeLayout
         android:gravity="center"
-        android:layout_height="50dp"
-        android:layout_width="match_parent">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Modifier votre profil" />
-    </RelativeLayout>
+        android:text="@string/changer_votre_photo_de_profil" />
 
-    <RelativeLayout
+    <TextView
+        android:id="@+id/tv_update_profile"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
         android:gravity="center"
-        android:layout_height="50dp"
-        android:layout_width="match_parent">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Changer votre adresse email" />
-    </RelativeLayout>
+        android:text="@string/modifier_vos_informations" />
 
-    <RelativeLayout
+    <TextView
+        android:id="@+id/tv_change_password"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
         android:gravity="center"
-        android:layout_height="50dp"
-        android:layout_width="match_parent">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Changer votre mot de passe" />
-    </RelativeLayout>
+        android:text="@string/changer_votre_mot_de_passe" />
 
-    <RelativeLayout
+    <TextView
+        android:id="@+id/tv_logout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
         android:gravity="center"
-        android:layout_height="50dp"
-        android:layout_width="match_parent">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Déconnexion" />
-    </RelativeLayout>
-
-
+        android:text="@string/d_connexion" />
 
 </LinearLayout>

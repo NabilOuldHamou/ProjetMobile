@@ -22,4 +22,8 @@
     <string name="select_content_button">Sélectionnez le contenu à poster</string>
     <string name="post_submit_button">Poster</string>
     <string name="selected_content_text">Contenu sélectionné : 0</string>
+    <string name="changer_votre_photo_de_profil">Changer votre photo de profil</string>
+    <string name="modifier_vos_informations">Modifier vos informations</string>
+    <string name="changer_votre_mot_de_passe">Changer votre mot de passe</string>
+    <string name="d_connexion">Déconnexion</string>
 </resources>
