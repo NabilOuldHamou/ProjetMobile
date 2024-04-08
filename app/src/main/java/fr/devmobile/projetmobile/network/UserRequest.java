@@ -1,7 +1,5 @@
 package fr.devmobile.projetmobile.network;
 
-import android.content.Intent;
-import android.telecom.Call;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -11,7 +9,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.devmobile.projetmobile.activities.MainActivity;
 import fr.devmobile.projetmobile.database.models.Post;
 import fr.devmobile.projetmobile.database.models.User;
 import fr.devmobile.projetmobile.session.Session;

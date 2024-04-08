@@ -1,7 +1,6 @@
 package fr.devmobile.projetmobile.activities.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,11 +69,6 @@ public class ProfileFragment extends Fragment {
         // SETTINGS
         settingsButton = (ImageView) view.findViewById(R.id.settings_button);
         settingsButton.setOnClickListener(v -> {
-            //session.deleteToken();
-            //session.deleteUser();
-            //startActivity(new Intent(getActivity(), LoginActivity.class));
-            //requireActivity().finish();
-
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.fragment_container, new SettingsFragment());

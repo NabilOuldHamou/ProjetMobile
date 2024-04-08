@@ -15,6 +15,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import fr.devmobile.projetmobile.database.models.Post;
+import fr.devmobile.projetmobile.database.models.User;
 import fr.devmobile.projetmobile.session.Session;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -112,6 +113,143 @@ public class AppHttpClient {
                         urls.add("https://oxyjen.io/assets/" + filesArray.getJSONObject(i).getString("FileName"));
                     }
                     Session.getInstance().addPost(new Post(post.getString("ID"), text, urls));
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+                future.complete(response.isSuccessful());
+            }
+        });
+
+        return future;
+    }
+
+    public CompletableFuture<Boolean> uploadProfilePicture(User user, byte[] file) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+
+        Headers headers = new Headers.Builder()
+                .add("Authorization", token)
+                .build();
+
+        MultipartBody.Builder bodyBuilder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM);
+
+        bodyBuilder.addFormDataPart("Email", user.getEmail());
+        bodyBuilder.addFormDataPart("DisplayName", user.getDisplayName());
+
+        bodyBuilder.addFormDataPart("Avatar", UUID.randomUUID().toString() + ".bmp",
+                RequestBody.create(file, MediaType.parse("application/octet-stream")));
+
+        RequestBody requestBody = bodyBuilder.build();
+
+        Request request = new Request.Builder()
+                .url(API_BASE_URL + "/users")
+                .headers(headers)
+                .put(requestBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                future.completeExceptionally(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                String text = response.body().string();
+                try {
+                    JSONObject user = new JSONObject(text).getJSONObject("user");
+                    JSONObject avatar = user.getJSONObject("Avatar");
+                    String fileName = avatar.getString("FileName");
+                    Session.getInstance().getUser().setAvatar("https://oxyjen.io/assets/" + fileName);
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+                future.complete(response.isSuccessful());
+            }
+        });
+
+        return future;
+    }
+
+    public CompletableFuture<Boolean> updateInformations(User user) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+
+        Headers headers = new Headers.Builder()
+                .add("Authorization", token)
+                .build();
+
+        MultipartBody.Builder bodyBuilder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM);
+
+        bodyBuilder.addFormDataPart("Email", user.getEmail());
+        bodyBuilder.addFormDataPart("DisplayName", user.getDisplayName());
+
+        RequestBody requestBody = bodyBuilder.build();
+        Request request = new Request.Builder()
+                .url(API_BASE_URL + "/users")
+                .headers(headers)
+                .put(requestBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                future.completeExceptionally(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                String text = response.body().string();
+                try {
+                    JSONObject userJson = new JSONObject(text).getJSONObject("user");
+                    User user = Session.getInstance().getUser();
+                    user.setEmail(userJson.getString("Email"));
+                    user.setDisplayName(userJson.getString("DisplayName"));
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+                future.complete(response.isSuccessful());
+            }
+        });
+
+        return future;
+    }
+
+    public CompletableFuture<Boolean> changePassword(User user, String password) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+
+        Headers headers = new Headers.Builder()
+                .add("Authorization", token)
+                .build();
+
+        MultipartBody.Builder bodyBuilder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM);
+
+        bodyBuilder.addFormDataPart("Email", user.getEmail());
+        bodyBuilder.addFormDataPart("DisplayName", user.getDisplayName());
+        bodyBuilder.addFormDataPart("Password", password);
+
+        RequestBody requestBody = bodyBuilder.build();
+        Request request = new Request.Builder()
+                .url(API_BASE_URL + "/users")
+                .headers(headers)
+                .put(requestBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                future.completeExceptionally(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                String text = response.body().string();
+                try {
+                    JSONObject userJson = new JSONObject(text).getJSONObject("user");
+                    User user = Session.getInstance().getUser();
+                    user.setEmail(userJson.getString("Email"));
+                    user.setDisplayName(userJson.getString("DisplayName"));
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
