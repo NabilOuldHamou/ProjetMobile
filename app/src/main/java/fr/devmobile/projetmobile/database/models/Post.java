@@ -1,5 +1,8 @@
 package fr.devmobile.projetmobile.database.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -8,7 +11,7 @@ import androidx.room.PrimaryKey;
 import java.util.List;
 
 @Entity(tableName = "post")
-public class Post {
+public class Post implements Parcelable {
 
     @PrimaryKey
     @NonNull
@@ -64,5 +67,15 @@ public class Post {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel parcel, int i) {
+
     }
 }

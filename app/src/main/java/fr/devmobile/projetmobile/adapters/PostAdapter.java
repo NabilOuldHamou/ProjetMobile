@@ -1,6 +1,7 @@
 package fr.devmobile.projetmobile.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 import fr.devmobile.projetmobile.R;
+import fr.devmobile.projetmobile.activities.MainActivity;
 import fr.devmobile.projetmobile.database.models.Post;
 import fr.devmobile.projetmobile.database.models.User;
 import fr.devmobile.projetmobile.activities.fragments.OtherProfileFragment;
@@ -86,7 +88,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         public View.OnClickListener userSelect = (view) -> {
             Post postData = posts.get(getAdapterPosition());
-            activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, OtherProfileFragment.newInstance(postData.getUser().getId())).addToBackStack(null).commit();
+            int previousFragmentId = MainActivity.currentFragmentId;
+            MainActivity.currentFragmentId = R.layout.fragment_other_profile;
+            activity.getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, OtherProfileFragment.newInstance(postData.getUser().getId(), previousFragmentId)).addToBackStack(null).commit();
         };
     }
 }

@@ -1,7 +1,13 @@
 package fr.devmobile.projetmobile.activities;
 
+import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -60,7 +66,6 @@ public class SplashActivity extends AppCompatActivity implements Session.Session
                         }
                         session.addPost(new Post(postId, postContent, urls));
                     }
-
                     startActivity(new Intent(this, MainActivity.class));
                 } catch (JSONException e) {
                     throw new RuntimeException(e);

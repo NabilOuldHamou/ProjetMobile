@@ -2,6 +2,7 @@ package fr.devmobile.projetmobile.activities.fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -40,6 +41,20 @@ import fr.devmobile.projetmobile.network.UserRequest;
 import fr.devmobile.projetmobile.session.Session;
 
 public class SearchFragment extends Fragment {
+
+    private static final String SEARCH_KEY = "search";
+
+    private static final String CURRENT_PAGE_KEY = "currentPage";
+
+    private static final String POST_DATA_KEY = "postData";
+
+    private static final String USER_DATA_KEY = "userData";
+
+    private static final String CURRENT_PAGE_POSTS_KEY = "currentPagePosts";
+
+    private static final String CURRENT_PAGE_USERS_KEY = "currentPageUsers";
+
+    private String search;
 
     private ProgressBar progressBarUsers;
 
@@ -80,6 +95,28 @@ public class SearchFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            search = getArguments().getString(SEARCH_KEY);
+            currentPagePos = getArguments().getInt(CURRENT_PAGE_KEY);
+            postsData = new ArrayList<Post>(getArguments().getParcelableArrayList(POST_DATA_KEY));
+            usersData = new ArrayList<User>(getArguments().getParcelableArrayList(USER_DATA_KEY));
+            currentPagePosts = getArguments().getInt(CURRENT_PAGE_POSTS_KEY);
+            currentPageUsers = getArguments().getInt(CURRENT_PAGE_USERS_KEY);
+        }
+
+    }
+
+    public static SearchFragment newInstance(String search, int currentPagePos, ArrayList<? extends Parcelable> postData, ArrayList<? extends Parcelable> userData, int currentPagePosts, int currentPageUsers){
+        SearchFragment fragment = new SearchFragment();
+        Bundle args = new Bundle();
+        args.putString(SEARCH_KEY, search);
+        args.putInt(CURRENT_PAGE_KEY, currentPagePos);
+        args.putParcelableArrayList(POST_DATA_KEY, postData);
+        args.putParcelableArrayList(USER_DATA_KEY, userData);
+        args.putInt(CURRENT_PAGE_POSTS_KEY, currentPagePosts);
+        args.putInt(CURRENT_PAGE_USERS_KEY, currentPageUsers);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -127,6 +164,10 @@ public class SearchFragment extends Fragment {
         setupPostRecycleView();
         userList.addOnScrollListener(scrollListenerUsers);
         postList.addOnScrollListener(scrollListenerPosts);
+
+        if(search != null){
+            inputSearch.setQuery(search, false);
+        }
 
         return view;
     }
@@ -263,6 +304,26 @@ public class SearchFragment extends Fragment {
                 });
             }
         });
+    }
+
+    public int getCurrentPagePos() {
+        return currentPagePos;
+    }
+
+    public List<Post> getPostData() {
+        return postsData;
+    }
+
+    public List<User> getUserData() {
+        return usersData;
+    }
+
+    public int getCurrentPageUser() {
+        return currentPageUsers;
+    }
+
+    public int getCurrentPagePost() {
+        return currentPagePosts;
     }
 
 }

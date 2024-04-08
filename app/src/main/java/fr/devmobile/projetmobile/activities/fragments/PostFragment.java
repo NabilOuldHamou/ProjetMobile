@@ -30,6 +30,10 @@ import fr.devmobile.projetmobile.session.Session;
 
 public class PostFragment extends Fragment {
 
+    private static final String DESCRIPTION_KEY = "description";
+
+    private String text;
+
     private EditText description;
     private Button postSelection;
     private Button submitButton;
@@ -39,9 +43,20 @@ public class PostFragment extends Fragment {
 
     public PostFragment() {}
 
+    public static PostFragment newInstance(String text){
+        PostFragment fragment = new PostFragment();
+        Bundle args = new Bundle();
+        args.putString(DESCRIPTION_KEY, text);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            text = getArguments().getString(DESCRIPTION_KEY);
+        }
     }
 
     @Override
@@ -56,6 +71,8 @@ public class PostFragment extends Fragment {
 
         postSelection.setOnClickListener(v -> openGallery());
         submitButton.setOnClickListener(v -> submitPost());
+
+        description.setText(text);
 
         return view;
     }
