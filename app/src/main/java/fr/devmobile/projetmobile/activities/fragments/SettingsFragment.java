@@ -54,6 +54,7 @@ public class SettingsFragment extends Fragment {
         logout.setOnClickListener(v -> {
             session.deleteToken();
             session.deleteUser();
+            session.clearPosts();
             startActivity(new Intent(getActivity(), LoginActivity.class));
             requireActivity().finish();
         });
