@@ -9,6 +9,7 @@ import androidx.room.Room;
 import java.util.List;
 
 import fr.devmobile.projetmobile.database.AppDatabase;
+import fr.devmobile.projetmobile.database.AppDatabaseRepository;
 import fr.devmobile.projetmobile.database.models.Post;
 import fr.devmobile.projetmobile.database.models.User;
 import fr.devmobile.projetmobile.network.AppHttpClient;
@@ -18,6 +19,7 @@ public class Session {
 
     private static Session instance;
     private static AppDatabase appDatabase;
+    private AppDatabaseRepository appDatabaseRepository;
 
     public SharedPreferences sharedPreferences;
     public SharedPreferences.Editor editor;
@@ -29,6 +31,7 @@ public class Session {
     public Session(Context context, SessionListener listener) {
         instance = this;
         appDatabase = Room.databaseBuilder(context, AppDatabase.class, "app-database").build();
+        appDatabaseRepository = new AppDatabaseRepository();
         sharedPreferences = context.getSharedPreferences("userPrefs", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
@@ -50,7 +53,7 @@ public class Session {
                             .thenAccept(b -> {
                                 if (!b) {
                                     deleteToken();
-                                    appDatabase.userDao().deleteUser(user);
+                                    appDatabaseRepository.deleteUser(user);
                                 }
                             });
 
@@ -76,29 +79,29 @@ public class Session {
 
     public void setUser(User user) {
         this.user = user;
-        appDatabase.userDao().insert(user);
+        appDatabaseRepository.insertUser(user);
     }
 
     public void deleteUser() {
         user = null;
-        appDatabase.userDao().deleteUser(user);
+        appDatabaseRepository.deleteUser(user);
     }
 
     public void clearPosts() {
         posts.forEach(p -> {
-            appDatabase.postDao().deletePost(p);
+            appDatabaseRepository.deletePost(p);
         });
         posts.clear();
     }
 
     public void addPost(Post post) {
         posts.add(post);
-        appDatabase.postDao().insert(post);
+        appDatabaseRepository.insertPost(post);
     }
 
     public void removePost(Post post) {
         posts.remove(post);
-        appDatabase.postDao().deletePost(post);
+        appDatabaseRepository.deletePost(post);
     }
 
     // GETTERS
