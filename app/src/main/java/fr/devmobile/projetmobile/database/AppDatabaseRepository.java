@@ -36,6 +36,9 @@ public class AppDatabaseRepository {
     }
 
     public void deleteUser(User user) {
+        if (user == null) {
+            return;
+        }
         AppDatabase.databaseWriteExecutor.execute(() -> {
             userDao.deleteUser(user);
         });
