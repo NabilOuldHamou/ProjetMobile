@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -30,6 +31,7 @@ import fr.devmobile.projetmobile.activities.fragments.OtherProfileFragment;
 import fr.devmobile.projetmobile.activities.fragments.PostFragment;
 import fr.devmobile.projetmobile.activities.fragments.ProfileFragment;
 import fr.devmobile.projetmobile.activities.fragments.SearchFragment;
+import fr.devmobile.projetmobile.broadcasts.TimeReceiver;
 import fr.devmobile.projetmobile.database.models.Post;
 import fr.devmobile.projetmobile.database.models.User;
 import fr.devmobile.projetmobile.databinding.ActivityMainBinding;
@@ -60,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 moveTaskToBack(true);
             }
         });
-
+        setupBroadcast();
         askPermisionNotifications(this);
     }
 
@@ -171,5 +173,11 @@ public class MainActivity extends AppCompatActivity {
             builder.setNegativeButton("Annuler", null);
             builder.show();
         }
+    }
+
+    private void setupBroadcast(){
+        IntentFilter filter = new IntentFilter(Intent.ACTION_TIME_TICK);
+        TimeReceiver timeReceiver = new TimeReceiver();
+        registerReceiver(timeReceiver, filter);
     }
 }
