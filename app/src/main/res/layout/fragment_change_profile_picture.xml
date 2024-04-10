@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activities.fragments.ChangeProfilePictureFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="11pt"
+        android:gravity="center"
+        android:text="@string/changer_votre_photo_de_profil" />
+
+    <Button
+        android:id="@+id/btn_select_pfp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Selectionner une image"
+        android:layout_gravity="center_horizontal"
+        />
+
+    <Button
+        android:id="@+id/btn_submit_pfp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Valider"
+        android:layout_gravity="center_horizontal"
+        />
+
+</LinearLayout>

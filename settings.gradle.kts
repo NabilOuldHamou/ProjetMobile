@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ProjetMobile"
+rootProject.name = "Azote"
 include(":app")
  

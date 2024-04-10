@@ -6,6 +6,15 @@ android {
     namespace = "fr.devmobile.projetmobile"
     compileSdk = 34
 
+    buildFeatures {
+        compose = true
+        viewBinding = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.1.1"
+    }
+
     defaultConfig {
         applicationId = "fr.devmobile.projetmobile"
         minSdk = 33
@@ -29,12 +38,14 @@ android {
 }
 
 dependencies {
+
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-rxjava3:2.6.1")
     annotationProcessor("androidx.room:room-compiler:2.6.1")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")

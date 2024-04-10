@@ -1,12 +1,29 @@
 <resources>
-    <string name="app_name">ProjetMobile</string>
-    <string name="inscription_name">Inscription</string>
-    <string name="username_name">Username</string>
-    <string name="email_name">Email</string>
-    <string name="password_name">Password</string>
+    <string name="app_name">Azote</string>
+    <string name="register">Inscription</string>
+    <string name="username">Nom d\'utilisateur</string>
     <string name="inscription_button">S\'inscrire</string>
     <string name="signin">Se connecter</string>
     <string name="email">Adresse email</string>
     <string name="password">Mot de passe</string>
     <string name="password_forgotten">Mot de passe oublié?</string>
+    <string name="create_account">Créer un compte</string>
+    <string name="already_have_account">Vous avez déjà un compte</string>
+    <string name="action_home_string">Accueil</string>
+    <string name="action_search_string">Recherche</string>
+    <string name="action_post_string">Post</string>
+    <string name="action_profile_string">Profil</string>
+    <string name="search_page_input">Rechercher</string>
+    <string name="show_more">Voir plus</string>
+
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="post_description_hint">Entrez une description…</string>
+    <string name="select_content_button">Sélectionnez le contenu à poster</string>
+    <string name="post_submit_button">Poster</string>
+    <string name="selected_content_text">Contenu sélectionné : 0</string>
+    <string name="changer_votre_photo_de_profil">Changer votre photo de profil</string>
+    <string name="modifier_vos_informations">Modifier vos informations</string>
+    <string name="changer_votre_mot_de_passe">Changer votre mot de passe</string>
+    <string name="d_connexion">Déconnexion</string>
 </resources>

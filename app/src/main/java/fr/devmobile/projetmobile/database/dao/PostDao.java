@@ -8,21 +8,22 @@ import androidx.room.Update;
 
 import java.util.List;
 
-import fr.devmobile.projetmobile.database.models.User;
+import fr.devmobile.projetmobile.database.models.Post;
 import io.reactivex.rxjava3.core.Single;
 
 @Dao
-public interface UserDao {
+public interface PostDao {
 
     @Insert
-    void insert(User user);
+    void insert(Post post);
 
-    @Query("SELECT * FROM user")
-    Single<List<User>> getUsers();
+    @Query("SELECT * FROM post")
+    Single<List<Post>> getPosts();
 
     @Update
-    void updateUser(User user);
+    void updatePost(Post post);
 
     @Delete
-    void deleteUser(User user);
+    void deletePost(Post post);
+
 }
